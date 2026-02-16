@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convita — Dashboard de Ventas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --convita-green: #1B5E3B;
+    --convita-green-light: #2E7D52;
+    --convita-green-dark: #0D3D24;
+    --convita-green-muted: #E8F5E9;
+    --convita-cream: #FAFAF5;
+    --convita-gold: #C8A951;
+    --convita-text: #1A1A1A;
+    --convita-text-secondary: #5A6B5E;
+    --convita-border: #D4E0D8;
+    --convita-card: #FFFFFF;
+    --shadow-sm: 0 1px 3px rgba(27,94,59,0.06);
+    --shadow-md: 0 4px 16px rgba(27,94,59,0.08);
+    --shadow-lg: 0 8px 32px rgba(27,94,59,0.12);
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--convita-cream);
+    color: var(--convita-text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--convita-green-dark) 0%, var(--convita-green) 40%, var(--convita-green-light) 100%);
+    padding: 48px 56px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(200,169,81,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative; z-index: 1;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-logo {
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 700;
+    color: #fff;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .brand-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 600; color: #fff; letter-spacing: -0.5px;
+  }
+  .brand-text span { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 300; }
+  .hero-date {
+    color: rgba(255,255,255,0.8); font-size: 13px;
+    background: rgba(255,255,255,0.1); padding: 8px 16px;
+    border-radius: 100px; backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  /* ===== KPI STRIP ===== */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    margin: -28px 40px 0; position: relative; z-index: 2;
+    background: var(--convita-card); border-radius: var(--radius);
+    box-shadow: var(--shadow-lg); overflow: hidden;
+  }
+  .kpi { padding: 28px 32px; border-right: 1px solid var(--convita-border); }
+  .kpi:last-child { border-right: none; }
+  .kpi-label {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--convita-text-secondary); font-weight: 500; margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-family: 'Playfair Display', serif; font-size: 32px;
+    font-weight: 700; color: var(--convita-green); line-height: 1.1;
+  }
+  .kpi-sub { font-size: 12.5px; color: var(--convita-text-secondary); margin-top: 6px; }
+  .kpi-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: #E8F5E9; color: var(--convita-green);
+    font-size: 11.5px; font-weight: 600; padding: 3px 10px;
+    border-radius: 100px; margin-top: 6px;
+  }
+  .kpi-badge.gold { background: #FFF8E1; color: #8D6E1F; }
+
+  /* ===== MAIN ===== */
+  .main {
+    padding: 36px 40px 60px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .card {
+    background: var(--convita-card); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); padding: 28px 32px;
+    border: 1px solid var(--convita-border); transition: box-shadow 0.3s ease;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+  .card.full { grid-column: 1 / -1; }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif; font-size: 20px;
+    font-weight: 600; color: var(--convita-green-dark);
+  }
+  .card-tag {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--convita-text-secondary); background: var(--convita-green-muted);
+    padding: 4px 12px; border-radius: 100px; font-weight: 500;
+  }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    text-align: left; padding: 10px 14px; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--convita-text-secondary); font-weight: 600;
+    border-bottom: 2px solid var(--convita-green);
+  }
+  thead th:last-child, tbody td:last-child { text-align: right; }
+  tbody tr { border-bottom: 1px solid #F0F4F1; transition: background 0.2s; }
+  tbody tr:hover { background: #F8FAF8; }
+  tbody td { padding: 12px 14px; }
+  .rank {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 8px;
+    font-size: 11px; font-weight: 700;
+    background: var(--convita-green-muted); color: var(--convita-green);
+  }
+  .rank.top { background: var(--convita-green); color: #fff; }
+  .revenue-val { font-weight: 600; color: var(--convita-green-dark); font-variant-numeric: tabular-nums; }
+  tr.grouped-row { background: #F4FAF6; }
+
+  /* ===== YEAR CARDS ===== */
+  .year-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .year-card {
+    background: linear-gradient(135deg, #F8FAF8, #FFF); border: 1px solid var(--convita-border);
+    border-radius: 12px; padding: 20px; text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .year-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .year-card.highlight {
+    background: linear-gradient(135deg, var(--convita-green), var(--convita-green-light));
+    border-color: transparent;
+  }
+  .year-card.highlight .year-label,
+  .year-card.highlight .year-amount,
+  .year-card.highlight .year-orders { color: #fff; }
+  .year-label { font-size: 14px; font-weight: 600; color: var(--convita-text-secondary); margin-bottom: 8px; }
+  .year-amount {
+    font-family: 'Playfair Display', serif; font-size: 22px;
+    font-weight: 700; color: var(--convita-green-dark); margin-bottom: 4px;
+  }
+  .year-orders { font-size: 12px; color: var(--convita-text-secondary); }
+
+  /* ===== MONTHLY BARS ===== */
+  .monthly-bars { display: flex; align-items: flex-end; gap: 6px; height: 220px; padding-top: 20px; }
+  .month-col {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 6px; height: 100%; justify-content: flex-end;
+  }
+  .month-bar {
+    width: 100%; border-radius: 6px 6px 2px 2px;
+    transition: height 0.6s ease, opacity 0.3s; min-height: 4px;
+    position: relative; cursor: default;
+  }
+  .month-bar:hover { opacity: 0.85; }
+  .month-bar .tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px);
+    left: 50%; transform: translateX(-50%);
+    background: var(--convita-green-dark); color: #fff;
+    padding: 6px 12px; border-radius: 8px; font-size: 11.5px;
+    white-space: nowrap; z-index: 10; box-shadow: var(--shadow-md);
+  }
+  .month-bar:hover .tooltip { display: block; }
+  .month-label { font-size: 10px; color: var(--convita-text-secondary); font-weight: 500; letter-spacing: 0.5px; }
+  .month-value { font-size: 10px; font-weight: 600; color: var(--convita-green-dark); text-align: center; }
+
+  /* ===== NETWORK CARDS ===== */
+  .net-section { margin-bottom: 28px; }
+  .net-section:last-child { margin-bottom: 0; }
+  .net-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--convita-green-muted);
+  }
+  .net-title { font-weight: 700; font-size: 15px; color: var(--convita-green-dark); }
+  .net-total { font-size: 13px; color: var(--convita-text-secondary); }
+  .net-total strong { color: var(--convita-green); }
+  .net-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .net-card {
+    background: linear-gradient(135deg, #F8FAF8, #FFF); border: 1px solid var(--convita-border);
+    border-radius: 10px; padding: 14px 16px; position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .net-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .net-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px; background: var(--convita-green);
+  }
+  .net-card.macro::before { background: var(--convita-gold); }
+  .net-name { font-weight: 600; font-size: 12.5px; color: var(--convita-green-dark); margin-bottom: 8px; line-height: 1.3; }
+  .net-stat {
+    display: flex; justify-content: space-between;
+    font-size: 11.5px; color: var(--convita-text-secondary); margin-bottom: 3px;
+  }
+  .net-stat strong { color: var(--convita-text); }
+
+  /* ===== RETENTION / RECURRENCE ===== */
+  .retention-bars { display: flex; gap: 12px; align-items: flex-end; height: 160px; }
+  .ret-col {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 6px; height: 100%; justify-content: flex-end;
+  }
+  .ret-bar {
+    width: 100%; border-radius: 8px 8px 2px 2px; position: relative; cursor: default;
+    transition: opacity 0.3s;
+  }
+  .ret-bar:hover { opacity: 0.85; }
+  .ret-bar .tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px);
+    left: 50%; transform: translateX(-50%);
+    background: var(--convita-green-dark); color: #fff;
+    padding: 6px 12px; border-radius: 8px; font-size: 11.5px;
+    white-space: nowrap; z-index: 10;
+  }
+  .ret-bar:hover .tooltip { display: block; }
+  .ret-count { font-size: 16px; font-weight: 700; color: var(--convita-green-dark); }
+  .ret-label { font-size: 11px; color: var(--convita-text-secondary); font-weight: 500; text-align: center; line-height: 1.3; }
+
+  /* ===== GROWTH TABLE ===== */
+  .growth-up { color: var(--convita-green); font-weight: 600; }
+
+  /* ===== FREQUENCY CARDS ===== */
+  .freq-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .freq-card {
+    background: linear-gradient(135deg, #F8FAF8, #FFF);
+    border: 1px solid var(--convita-border); border-radius: 12px;
+    padding: 20px; text-align: center;
+  }
+  .freq-client { font-weight: 700; font-size: 15px; color: var(--convita-green-dark); margin-bottom: 6px; }
+  .freq-val {
+    font-family: 'Playfair Display', serif; font-size: 28px;
+    font-weight: 700; color: var(--convita-green); line-height: 1;
+  }
+  .freq-unit { font-size: 12px; color: var(--convita-text-secondary); margin-top: 4px; }
+
+  /* ===== DOW BARS ===== */
+  .dow-bars { display: flex; gap: 8px; align-items: flex-end; height: 140px; }
+  .dow-col {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 4px; height: 100%; justify-content: flex-end;
+  }
+  .dow-bar {
+    width: 100%; border-radius: 6px 6px 2px 2px; position: relative; cursor: default;
+  }
+  .dow-bar .tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px);
+    left: 50%; transform: translateX(-50%);
+    background: var(--convita-green-dark); color: #fff;
+    padding: 6px 12px; border-radius: 8px; font-size: 11.5px;
+    white-space: nowrap; z-index: 10;
+  }
+  .dow-bar:hover .tooltip { display: block; }
+  .dow-bar:hover { opacity: 0.85; }
+  .dow-label { font-size: 10px; color: var(--convita-text-secondary); font-weight: 600; }
+  .dow-val { font-size: 10px; font-weight: 600; color: var(--convita-green-dark); }
+
+  /* ===== NEW CLIENTS SPARKLINE ===== */
+  .nc-bars { display: flex; gap: 4px; align-items: flex-end; height: 100px; }
+  .nc-col {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 3px; height: 100%; justify-content: flex-end;
+  }
+  .nc-bar {
+    width: 100%; border-radius: 4px 4px 1px 1px; min-height: 3px;
+    position: relative; cursor: default;
+  }
+  .nc-bar .tooltip {
+    display: none; position: absolute; bottom: calc(100% + 6px);
+    left: 50%; transform: translateX(-50%);
+    background: var(--convita-green-dark); color: #fff;
+    padding: 5px 10px; border-radius: 6px; font-size: 10.5px;
+    white-space: nowrap; z-index: 10;
+  }
+  .nc-bar:hover .tooltip { display: block; }
+  .nc-bar:hover { opacity: 0.8; }
+  .nc-label { font-size: 8px; color: var(--convita-text-secondary); font-weight: 500; }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center; padding: 24px 40px 36px; font-size: 12px;
+    color: var(--convita-text-secondary); border-top: 1px solid var(--convita-border); margin: 0 40px;
+  }
+  .footer a { color: var(--convita-green); text-decoration: none; }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .kpi-strip { animation: fadeUp 0.6s ease both; }
+  .card { animation: fadeUp 0.6s ease both; }
+  .card:nth-child(1) { animation-delay: 0.08s; }
+  .card:nth-child(2) { animation-delay: 0.14s; }
+  .card:nth-child(3) { animation-delay: 0.20s; }
+  .card:nth-child(4) { animation-delay: 0.26s; }
+  .card:nth-child(5) { animation-delay: 0.32s; }
+  .card:nth-child(6) { animation-delay: 0.38s; }
+  .card:nth-child(7) { animation-delay: 0.44s; }
+  .card:nth-child(8) { animation-delay: 0.50s; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr; }
+    .card.full { grid-column: 1; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); margin: -28px 20px 0; }
+    .kpi:nth-child(2) { border-right: none; }
+    .hero { padding: 36px 24px 32px; }
+    .main { padding: 28px 20px 48px; }
+    .year-grid, .freq-grid { grid-template-columns: 1fr 1fr; }
+    .net-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .kpi-strip { grid-template-columns: 1fr; }
+    .kpi { border-right: none; border-bottom: 1px solid var(--convita-border); }
+    .kpi:last-child { border-bottom: none; }
+    .year-grid, .freq-grid { grid-template-columns: 1fr; }
+    .net-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="brand">
+      <div class="brand-logo">C</div>
+      <div class="brand-text">
+        <h1>Convita</h1>
+        <span>Sin gluten, sin complicaciones.</span>
+      </div>
+    </div>
+    <div class="hero-date">Datos al 14 Feb 2026</div>
+  </div>
+</div>
+
+<!-- ===== KPIs ===== -->
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">Facturación Total</div>
+    <div class="kpi-value">$31.6M</div>
+    <div class="kpi-sub">UYU — pedidos confirmados</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Pedidos Confirmados</div>
+    <div class="kpi-value">4,098</div>
+    <div class="kpi-badge">809 clientes únicos</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Ticket Promedio</div>
+    <div class="kpi-value">$7,938</div>
+    <div class="kpi-sub">UYU por pedido</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Facturación 2025</div>
+    <div class="kpi-value">$19.9M</div>
+    <div class="kpi-badge">+172% vs 2024</div>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- Evolución Anual -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Evolución Anual</div>
+      <span class="card-tag">2023 — 2026</span>
+    </div>
+    <div class="year-grid">
+      <div class="year-card">
+        <div class="year-label">2023</div>
+        <div class="year-amount">$1.3M</div>
+        <div class="year-orders">596 pedidos</div>
+      </div>
+      <div class="year-card">
+        <div class="year-label">2024</div>
+        <div class="year-amount">$7.3M</div>
+        <div class="year-orders">1,431 pedidos</div>
+      </div>
+      <div class="year-card highlight">
+        <div class="year-label">2025</div>
+        <div class="year-amount">$19.9M</div>
+        <div class="year-orders">2,003 pedidos</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:14px;">
+      <div class="kpi-badge gold" style="font-size:12px;padding:5px 14px;">2026 en curso: $3.1M — 250 pedidos</div>
+    </div>
+  </div>
+
+  <!-- Insights -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Insights Clave</div>
+      <span class="card-tag">Resumen Ejecutivo</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--convita-green-muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">📈</div>
+        <div>
+          <div style="font-weight:600;font-size:14px;margin-bottom:3px;">Crecimiento sostenido</div>
+          <div style="font-size:13px;color:var(--convita-text-secondary);line-height:1.5;">Facturación +172% de 2024 a 2025. Ticket promedio de $7.4K a $12.3K en el año.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#FFF8E1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">⚠️</div>
+        <div>
+          <div style="font-weight:600;font-size:14px;margin-bottom:3px;">Riesgo de concentración</div>
+          <div style="font-size:13px;color:var(--convita-text-secondary);line-height:1.5;">Top 3 clientes = 43.8% de la facturación. Top 5 = 56.2%. Diversificar cartera sería estratégico.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#E3F2FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">🔄</div>
+        <div>
+          <div style="font-weight:600;font-size:14px;margin-bottom:3px;">Retención: oportunidad</div>
+          <div style="font-size:13px;color:var(--convita-text-secondary);line-height:1.5;">428 clientes hicieron solo 1 pedido (53.6%). Activar recompra en este segmento puede destrabar crecimiento.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#F3E5F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">🏪</div>
+        <div>
+          <div style="font-weight:600;font-size:14px;margin-bottom:3px;">Redes como motor</div>
+          <div style="font-size:13px;color:var(--convita-text-secondary);line-height:1.5;">La Molienda (8 suc.) y Macromercado (4 suc.) suman $5.8M y 616 pedidos. Canal de distribución fundamental.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Revenue 2025 -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Facturación Mensual 2025</div>
+      <span class="card-tag">Tendencia Creciente</span>
+    </div>
+    <div class="monthly-bars">
+      <div class="month-col">
+        <div class="month-value">$729K</div>
+        <div class="month-bar" style="height:30%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Ene — $728,546 — 102 ped. — 72 clientes</div></div>
+        <div class="month-label">ENE</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$1.05M</div>
+        <div class="month-bar" style="height:43%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Feb — $1,047,058 — 122 ped. — 82 clientes</div></div>
+        <div class="month-label">FEB</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$1.28M</div>
+        <div class="month-bar" style="height:53%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Mar — $1,275,681 — 155 ped. — 107 clientes</div></div>
+        <div class="month-label">MAR</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$1.41M</div>
+        <div class="month-bar" style="height:58%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Abr — $1,408,534 — 132 ped. — 84 clientes</div></div>
+        <div class="month-label">ABR</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$1.49M</div>
+        <div class="month-bar" style="height:62%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">May — $1,486,131 — 151 ped. — 89 clientes</div></div>
+        <div class="month-label">MAY</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$1.41M</div>
+        <div class="month-bar" style="height:58%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Jun — $1,411,858 — 151 ped. — 94 clientes</div></div>
+        <div class="month-label">JUN</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$1.89M</div>
+        <div class="month-bar" style="height:78%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Jul — $1,889,239 — 175 ped. — 101 clientes</div></div>
+        <div class="month-label">JUL</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$1.87M</div>
+        <div class="month-bar" style="height:77%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Ago — $1,868,438 — 160 ped. — 91 clientes</div></div>
+        <div class="month-label">AGO</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$1.80M</div>
+        <div class="month-bar" style="height:74%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Sep — $1,802,176 — 191 ped. — 103 clientes</div></div>
+        <div class="month-label">SEP</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$2.20M</div>
+        <div class="month-bar" style="height:91%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Oct — $2,196,397 — 185 ped. — 99 clientes</div></div>
+        <div class="month-label">OCT</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$2.35M</div>
+        <div class="month-bar" style="height:97%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">Nov — $2,349,955 — 177 ped. — 98 clientes</div></div>
+        <div class="month-label">NOV</div>
+      </div>
+      <div class="month-col">
+        <div class="month-value">$2.41M</div>
+        <div class="month-bar" style="height:100%;background:linear-gradient(180deg,var(--convita-gold),#A08530);"><div class="tooltip">Dic — $2,413,361 — 202 ped. — 92 clientes — Récord!</div></div>
+        <div class="month-label" style="font-weight:700;color:var(--convita-green-dark);">DIC ★</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <div class="kpi-badge" style="font-size:12px;padding:5px 14px;">Ticket promedio Oct–Dic: $12,969</div>
+      <div class="kpi-badge gold" style="font-size:12px;padding:5px 14px;">Crecimiento Ene→Dic: +231%</div>
+    </div>
+  </div>
+
+  <!-- Top 15 Clients -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Top 15 Clientes</div>
+      <span class="card-tag">Redes agrupadas</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>Cliente</th>
+            <th>Pedidos</th>
+            <th>Ticket Prom.</th>
+            <th>Facturación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rank top">1</span></td>
+            <td><strong>La Spezia</strong></td>
+            <td>95</td>
+            <td>$70,235</td>
+            <td class="revenue-val">$6,531,869</td>
+          </tr>
+          <tr>
+            <td><span class="rank top">2</span></td>
+            <td><strong>Crufi</strong></td>
+            <td>32</td>
+            <td>$124,625</td>
+            <td class="revenue-val">$3,988,002</td>
+          </tr>
+          <tr class="grouped-row">
+            <td><span class="rank top">3</span></td>
+            <td><strong>La Molienda (Red)</strong> <span style="font-size:11px;color:var(--convita-text-secondary);font-weight:400;">— 8 sucursales</span></td>
+            <td>400</td>
+            <td>$8,426</td>
+            <td class="revenue-val">$3,302,954</td>
+          </tr>
+          <tr class="grouped-row">
+            <td><span class="rank top">4</span></td>
+            <td><strong>Macromercado (Red)</strong> <span style="font-size:11px;color:var(--convita-text-secondary);font-weight:400;">— 4 sucursales</span></td>
+            <td>216</td>
+            <td>$11,738</td>
+            <td class="revenue-val">$2,476,760</td>
+          </tr>
+          <tr>
+            <td><span class="rank">5</span></td>
+            <td>Casa & Dispensa</td>
+            <td>52</td>
+            <td>$27,568</td>
+            <td class="revenue-val">$1,433,515</td>
+          </tr>
+          <tr>
+            <td><span class="rank">6</span></td>
+            <td>Sapere Paysandú</td>
+            <td>11</td>
+            <td>$70,852</td>
+            <td class="revenue-val">$708,522</td>
+          </tr>
+          <tr>
+            <td><span class="rank">7</span></td>
+            <td>La Casa de los Congelados</td>
+            <td>42</td>
+            <td>$15,701</td>
+            <td class="revenue-val">$659,421</td>
+          </tr>
+          <tr>
+            <td><span class="rank">8</span></td>
+            <td>5 Océanos - Berro</td>
+            <td>49</td>
+            <td>$13,720</td>
+            <td class="revenue-val">$644,824</td>
+          </tr>
+          <tr>
+            <td><span class="rank">9</span></td>
+            <td>Supersol</td>
+            <td>18</td>
+            <td>$35,708</td>
+            <td class="revenue-val">$571,324</td>
+          </tr>
+          <tr>
+            <td><span class="rank">10</span></td>
+            <td>Nicolás Perera Mercedes</td>
+            <td>17</td>
+            <td>$29,490</td>
+            <td class="revenue-val">$442,354</td>
+          </tr>
+          <tr>
+            <td><span class="rank">11</span></td>
+            <td>Portisur Av. Italia</td>
+            <td>20</td>
+            <td>$23,652</td>
+            <td class="revenue-val">$402,084</td>
+          </tr>
+          <tr>
+            <td><span class="rank">12</span></td>
+            <td>Graviola</td>
+            <td>44</td>
+            <td>$6,834</td>
+            <td class="revenue-val">$300,714</td>
+          </tr>
+          <tr>
+            <td><span class="rank">13</span></td>
+            <td>Dalbertt</td>
+            <td>35</td>
+            <td>$7,422</td>
+            <td class="revenue-val">$259,772</td>
+          </tr>
+          <tr>
+            <td><span class="rank">14</span></td>
+            <td>GHANIMA</td>
+            <td>5</td>
+            <td>$60,008</td>
+            <td class="revenue-val">$240,032</td>
+          </tr>
+          <tr>
+            <td><span class="rank">15</span></td>
+            <td>Supermercado El Depósito</td>
+            <td>8</td>
+            <td>$29,212</td>
+            <td class="revenue-val">$233,694</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Network Detail: Molienda + Macromercado -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Redes de Distribución — Detalle</div>
+      <span class="card-tag">12 sucursales combinadas</span>
+    </div>
+    <!-- La Molienda -->
+    <div class="net-section">
+      <div class="net-header">
+        <div class="net-title">La Molienda</div>
+        <div class="net-total"><strong>$3,302,954</strong> · 400 pedidos · 8 sucursales</div>
+      </div>
+      <div class="net-grid">
+        <div class="net-card">
+          <div class="net-name">Costa Urbana</div>
+          <div class="net-stat"><span>Facturación</span><strong>$601,539</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>63</strong></div>
+        </div>
+        <div class="net-card">
+          <div class="net-name">Punta Carretas</div>
+          <div class="net-stat"><span>Facturación</span><strong>$547,491</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>76</strong></div>
+        </div>
+        <div class="net-card">
+          <div class="net-name">Convención</div>
+          <div class="net-stat"><span>Facturación</span><strong>$497,975</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>55</strong></div>
+        </div>
+        <div class="net-card">
+          <div class="net-name">ACJ</div>
+          <div class="net-stat"><span>Facturación</span><strong>$492,669</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>42</strong></div>
+        </div>
+        <div class="net-card">
+          <div class="net-name">Arocena</div>
+          <div class="net-stat"><span>Facturación</span><strong>$460,395</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>44</strong></div>
+        </div>
+        <div class="net-card">
+          <div class="net-name">Ciudad Vieja</div>
+          <div class="net-stat"><span>Facturación</span><strong>$435,774</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>65</strong></div>
+        </div>
+        <div class="net-card">
+          <div class="net-name">Ejido</div>
+          <div class="net-stat"><span>Facturación</span><strong>$266,030</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>52</strong></div>
+        </div>
+        <div class="net-card">
+          <div class="net-name">Pablo de María</div>
+          <div class="net-stat"><span>Facturación</span><strong>$1,080</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>3</strong></div>
+        </div>
+      </div>
+    </div>
+    <!-- Macromercado -->
+    <div class="net-section">
+      <div class="net-header">
+        <div class="net-title">Macromercado</div>
+        <div class="net-total"><strong>$2,476,760</strong> · 216 pedidos · 4 sucursales</div>
+      </div>
+      <div class="net-grid">
+        <div class="net-card macro">
+          <div class="net-name">San Martín</div>
+          <div class="net-stat"><span>Facturación</span><strong>$854,824</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>74</strong></div>
+        </div>
+        <div class="net-card macro">
+          <div class="net-name">Carrasco</div>
+          <div class="net-stat"><span>Facturación</span><strong>$779,551</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>72</strong></div>
+        </div>
+        <div class="net-card macro">
+          <div class="net-name">Maldonado</div>
+          <div class="net-stat"><span>Facturación</span><strong>$651,773</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>56</strong></div>
+        </div>
+        <div class="net-card macro">
+          <div class="net-name">Las Piedras</div>
+          <div class="net-stat"><span>Facturación</span><strong>$190,612</strong></div>
+          <div class="net-stat"><span>Pedidos</span><strong>14</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recurrence -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Recurrencia de Clientes</div>
+      <span class="card-tag">Retención</span>
+    </div>
+    <div class="retention-bars">
+      <div class="ret-col">
+        <div class="ret-count">428</div>
+        <div class="ret-bar" style="height:100%;background:linear-gradient(180deg,#EF9A9A,#E57373);"><div class="tooltip">428 clientes con 1 solo pedido (53.6%)</div></div>
+        <div class="ret-label">1 pedido</div>
+      </div>
+      <div class="ret-col">
+        <div class="ret-count">242</div>
+        <div class="ret-bar" style="height:57%;background:linear-gradient(180deg,#FFE082,#FFD54F);"><div class="tooltip">242 clientes con 2–5 pedidos (30.3%)</div></div>
+        <div class="ret-label">2–5</div>
+      </div>
+      <div class="ret-col">
+        <div class="ret-count">55</div>
+        <div class="ret-bar" style="height:13%;background:linear-gradient(180deg,#A5D6A7,#81C784);"><div class="tooltip">55 clientes con 6–10 pedidos (6.9%)</div></div>
+        <div class="ret-label">6–10</div>
+      </div>
+      <div class="ret-col">
+        <div class="ret-count">43</div>
+        <div class="ret-bar" style="height:10%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));"><div class="tooltip">43 clientes con 11–20 pedidos (5.4%)</div></div>
+        <div class="ret-label">11–20</div>
+      </div>
+      <div class="ret-col">
+        <div class="ret-count">31</div>
+        <div class="ret-bar" style="height:7%;background:linear-gradient(180deg,var(--convita-green),var(--convita-green-dark));"><div class="tooltip">31 clientes con 21+ pedidos (3.9%) — core business</div></div>
+        <div class="ret-label">21+</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;text-align:center;">
+      <div class="kpi-badge" style="font-size:11.5px;padding:4px 12px;">53.6% de clientes no recompró — oportunidad clave</div>
+    </div>
+  </div>
+
+  <!-- Frequency + Day of Week -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Frecuencia y Patrones</div>
+      <span class="card-tag">Operativa</span>
+    </div>
+    <!-- Frequency top clients -->
+    <div style="margin-bottom:24px;">
+      <div style="font-weight:600;font-size:13px;color:var(--convita-text-secondary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.8px;font-size:11px;">Frecuencia de compra — Top clientes</div>
+      <div class="freq-grid">
+        <div class="freq-card">
+          <div class="freq-client">Casa & Dispensa</div>
+          <div class="freq-val">3</div>
+          <div class="freq-unit">días entre pedidos</div>
+        </div>
+        <div class="freq-card">
+          <div class="freq-client">La Spezia</div>
+          <div class="freq-val">8</div>
+          <div class="freq-unit">días entre pedidos</div>
+        </div>
+        <div class="freq-card">
+          <div class="freq-client">Crufi</div>
+          <div class="freq-val">11</div>
+          <div class="freq-unit">días entre pedidos</div>
+        </div>
+      </div>
+    </div>
+    <!-- Day of week -->
+    <div>
+      <div style="font-weight:600;font-size:13px;color:var(--convita-text-secondary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.8px;font-size:11px;">Pedidos por día de la semana</div>
+      <div class="dow-bars">
+        <div class="dow-col">
+          <div class="dow-val">866</div>
+          <div class="dow-bar" style="height:68%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));border-radius:6px 6px 2px 2px;"><div class="tooltip">Lunes: 866 pedidos — $5.4M</div></div>
+          <div class="dow-label">LUN</div>
+        </div>
+        <div class="dow-col">
+          <div class="dow-val">872</div>
+          <div class="dow-bar" style="height:69%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));border-radius:6px 6px 2px 2px;"><div class="tooltip">Martes: 872 pedidos — $6.1M</div></div>
+          <div class="dow-label">MAR</div>
+        </div>
+        <div class="dow-col">
+          <div class="dow-val">618</div>
+          <div class="dow-bar" style="height:49%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));border-radius:6px 6px 2px 2px;"><div class="tooltip">Miércoles: 618 pedidos — $5.2M</div></div>
+          <div class="dow-label">MIÉ</div>
+        </div>
+        <div class="dow-col">
+          <div class="dow-val">679</div>
+          <div class="dow-bar" style="height:54%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));border-radius:6px 6px 2px 2px;"><div class="tooltip">Jueves: 679 pedidos — $6.5M (mayor ticket!)</div></div>
+          <div class="dow-label">JUE</div>
+        </div>
+        <div class="dow-col">
+          <div class="dow-val">591</div>
+          <div class="dow-bar" style="height:47%;background:linear-gradient(180deg,var(--convita-green-light),var(--convita-green));border-radius:6px 6px 2px 2px;"><div class="tooltip">Viernes: 591 pedidos — $5.9M</div></div>
+          <div class="dow-label">VIE</div>
+        </div>
+        <div class="dow-col">
+          <div class="dow-val">187</div>
+          <div class="dow-bar" style="height:15%;background:linear-gradient(180deg,#D4E0D8,#B0BEB5);border-radius:6px 6px 2px 2px;"><div class="tooltip">Sábado: 187 pedidos — $920K</div></div>
+          <div class="dow-label">SÁB</div>
+        </div>
+        <div class="dow-col">
+          <div class="dow-val">164</div>
+          <div class="dow-bar" style="height:13%;background:linear-gradient(180deg,#D4E0D8,#B0BEB5);border-radius:6px 6px 2px 2px;"><div class="tooltip">Domingo: 164 pedidos — $1.6M (ticket alto!)</div></div>
+          <div class="dow-label">DOM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Growth 2024 → 2025 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Top Crecimiento 2024 → 2025</div>
+      <span class="card-tag">Interanual</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>2024</th>
+            <th>2025</th>
+            <th>Cambio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Macromercado (Red)</strong></td>
+            <td>$428K</td>
+            <td>$1.78M</td>
+            <td class="growth-up">+317%</td>
+          </tr>
+          <tr>
+            <td>Nicolás Perera Mercedes</td>
+            <td>$96K</td>
+            <td>$297K</td>
+            <td class="growth-up">+209%</td>
+          </tr>
+          <tr>
+            <td>Graviola</td>
+            <td>$74K</td>
+            <td>$206K</td>
+            <td class="growth-up">+177%</td>
+          </tr>
+          <tr>
+            <td><strong>La Molienda (Red)</strong></td>
+            <td>$906K</td>
+            <td>$2.13M</td>
+            <td class="growth-up">+135%</td>
+          </tr>
+          <tr>
+            <td>Artesanía Pastelera</td>
+            <td>$63K</td>
+            <td>$125K</td>
+            <td class="growth-up">+98%</td>
+          </tr>
+          <tr>
+            <td>Simple y Natural</td>
+            <td>$54K</td>
+            <td>$87K</td>
+            <td class="growth-up">+59%</td>
+          </tr>
+          <tr>
+            <td>Sapere Paysandú</td>
+            <td>$303K</td>
+            <td>$405K</td>
+            <td class="growth-up">+34%</td>
+          </tr>
+          <tr>
+            <td><strong>La Spezia</strong></td>
+            <td>$2.71M</td>
+            <td>$3.43M</td>
+            <td class="growth-up">+27%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- New Clients -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Captación de Clientes Nuevos</div>
+      <span class="card-tag">Últimos 18 meses</span>
+    </div>
+    <div class="nc-bars">
+      <div class="nc-col"><div class="nc-bar" style="height:37%;background:var(--convita-green-light);"><div class="tooltip">Sep 2024: 11 nuevos</div></div><div class="nc-label">S24</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:60%;background:var(--convita-green-light);"><div class="tooltip">Oct 2024: 18 nuevos</div></div><div class="nc-label">O</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:73%;background:var(--convita-green-light);"><div class="tooltip">Nov 2024: 22 nuevos</div></div><div class="nc-label">N</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:100%;background:linear-gradient(180deg,var(--convita-gold),#A08530);"><div class="tooltip">Dic 2024: 30 nuevos — Récord!</div></div><div class="nc-label">D</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:43%;background:var(--convita-green);"><div class="tooltip">Ene 2025: 13 nuevos</div></div><div class="nc-label">E25</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:60%;background:var(--convita-green);"><div class="tooltip">Feb 2025: 18 nuevos</div></div><div class="nc-label">F</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:87%;background:var(--convita-green);"><div class="tooltip">Mar 2025: 26 nuevos</div></div><div class="nc-label">M</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:50%;background:var(--convita-green);"><div class="tooltip">Abr 2025: 15 nuevos</div></div><div class="nc-label">A</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:53%;background:var(--convita-green);"><div class="tooltip">May 2025: 16 nuevos</div></div><div class="nc-label">M</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:67%;background:var(--convita-green);"><div class="tooltip">Jun 2025: 20 nuevos</div></div><div class="nc-label">J</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:73%;background:var(--convita-green);"><div class="tooltip">Jul 2025: 22 nuevos</div></div><div class="nc-label">J</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:27%;background:var(--convita-green);"><div class="tooltip">Ago 2025: 8 nuevos</div></div><div class="nc-label">A</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:70%;background:var(--convita-green);"><div class="tooltip">Sep 2025: 21 nuevos</div></div><div class="nc-label">S</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:57%;background:var(--convita-green);"><div class="tooltip">Oct 2025: 17 nuevos</div></div><div class="nc-label">O</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:57%;background:var(--convita-green);"><div class="tooltip">Nov 2025: 17 nuevos</div></div><div class="nc-label">N</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:50%;background:var(--convita-green);"><div class="tooltip">Dic 2025: 15 nuevos</div></div><div class="nc-label">D</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:40%;background:var(--convita-green-dark);"><div class="tooltip">Ene 2026: 12 nuevos</div></div><div class="nc-label">E26</div></div>
+      <div class="nc-col"><div class="nc-bar" style="height:23%;background:var(--convita-green-dark);"><div class="tooltip">Feb 2026: 7 nuevos (mes en curso)</div></div><div class="nc-label">F</div></div>
+    </div>
+    <div style="margin-top:12px;text-align:center;">
+      <div class="kpi-badge" style="font-size:11.5px;padding:4px 12px;">Promedio 2025: ~17 clientes nuevos/mes</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <strong>Convita</strong> — Integro SAS · General Pagola 1765, Montevideo, Uruguay · <a href="https://www.convita.com.uy">convita.com.uy</a>
+</div>
+
+</body>
+</html>
