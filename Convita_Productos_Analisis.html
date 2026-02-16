@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convita — Análisis de Productos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g:#1B5E3B;--gl:#2E7D52;--gd:#0D3D24;--gm:#E8F5E9;
+    --o:#E27530;--ol:#F09050;--od:#B85A1E;--om:#FFF3EB;
+    --cream:#FAFAF5;--text:#1A1A1A;--ts:#5A6B5E;--border:#D4E0D8;--card:#FFF;
+    --gold:#C8A951;--purple:#5C6BC0;--plm:#E8EAF6;
+    --shadow-sm:0 1px 3px rgba(27,94,59,.06);--shadow-md:0 4px 16px rgba(27,94,59,.08);--shadow-lg:0 8px 32px rgba(27,94,59,.12);
+    --r:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+  .hero{background:linear-gradient(135deg,var(--gd) 0%,var(--g) 40%,var(--gl) 100%);padding:44px 56px 38px;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:350px;height:350px;background:radial-gradient(circle,rgba(200,169,81,.15) 0%,transparent 70%);border-radius:50%}
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand-logo{width:48px;height:48px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2)}
+  .brand-text h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;color:#fff;letter-spacing:-.5px}
+  .brand-text .sub{font-size:14px;color:rgba(255,255,255,.8);font-weight:400;margin-top:2px}
+  .hero-date{color:rgba(255,255,255,.8);font-size:13px;background:rgba(255,255,255,.12);padding:8px 16px;border-radius:100px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15)}
+
+  .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);margin:-28px 40px 0;position:relative;z-index:2;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-lg);overflow:hidden}
+  .kpi{padding:26px 28px;border-right:1px solid var(--border)}.kpi:last-child{border-right:none}
+  .kpi-label{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ts);font-weight:500;margin-bottom:8px}
+  .kpi-value{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--g);line-height:1.1}
+  .kpi-sub{font-size:12px;color:var(--ts);margin-top:5px}
+  .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-top:5px}
+  .badge.green{background:var(--gm);color:var(--g)} .badge.gold{background:#FFF8E1;color:#8D6E1F} .badge.orange{background:var(--om);color:var(--od)} .badge.purple{background:var(--plm);color:var(--purple)}
+
+  .main{padding:36px 40px 60px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-sm);padding:28px 32px;border:1px solid var(--border);transition:box-shadow .3s}
+  .card:hover{box-shadow:var(--shadow-md)}.card.full{grid-column:1/-1}
+  .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+  .card-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--gd)}
+  .card-tag{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ts);background:var(--gm);padding:4px 12px;border-radius:100px;font-weight:500}
+
+  /* TABLE */
+  .tw{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{text-align:left;padding:10px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--ts);font-weight:600;border-bottom:2px solid var(--g)}
+  thead th:nth-child(n+3){text-align:right}
+  tbody td:nth-child(n+3){text-align:right}
+  tbody tr{border-bottom:1px solid #F0F4F1;transition:background .2s}
+  tbody tr:hover{background:#F8FAF8}
+  tbody td{padding:10px 12px}
+  .rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;font-size:10px;font-weight:700;background:var(--gm);color:var(--g)}
+  .rank.top{background:var(--g);color:#fff}
+  .val{font-weight:600;font-variant-numeric:tabular-nums;color:var(--gd)}
+  .mdd-tag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:4px}
+  .mdd-tag.crufi{background:#E3F2FD;color:#1565C0}
+  .mdd-tag.spezia{background:#FFF3E0;color:#E65100}
+  .mdd-tag.granel{background:#F3E5F5;color:#7B1FA2}
+
+  /* CATEGORY BARS */
+  .cat-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F0F4F1}
+  .cat-row:last-child{border-bottom:none}
+  .cat-name{width:110px;font-weight:600;font-size:13px;color:var(--gd);flex-shrink:0}
+  .cat-bar-wrap{flex:1;height:28px;background:#F4F8F5;border-radius:6px;overflow:hidden;position:relative}
+  .cat-bar{height:100%;border-radius:6px;position:relative;transition:width .8s ease}
+  .cat-bar .tip{display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:#fff;font-weight:600;white-space:nowrap}
+  .cat-bar:hover .tip{display:block}
+  .cat-pct{width:50px;font-size:12px;font-weight:600;color:var(--g);text-align:right;flex-shrink:0}
+  .cat-amt{width:80px;font-size:12px;color:var(--ts);text-align:right;flex-shrink:0}
+
+  /* CHANNEL DONUT */
+  .channel-grid{display:grid;grid-template-columns:180px 1fr;gap:30px;align-items:center}
+  .donut-svg{width:180px;height:180px}
+  .channel-legend{display:flex;flex-direction:column;gap:10px}
+  .ch-item{display:flex;align-items:center;gap:10px}
+  .ch-dot{width:14px;height:14px;border-radius:5px;flex-shrink:0}
+  .ch-info{flex:1;display:flex;justify-content:space-between;font-size:13px}
+  .ch-name{font-weight:500}.ch-val{font-weight:600;color:var(--gd)}
+  .ch-pct{font-size:11px;color:var(--ts);font-weight:400}
+
+  /* WEB HIGHLIGHT */
+  .web-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .web-card{padding:16px;border-radius:12px;background:linear-gradient(135deg,#F8FAF8,#FFF);border:1px solid var(--border);text-align:center}
+  .web-prod{font-weight:600;font-size:12.5px;color:var(--gd);margin-bottom:6px;line-height:1.3}
+  .web-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--g)}
+  .web-sub{font-size:11px;color:var(--ts);margin-top:3px}
+
+  /* DISCOUNT TABLE */
+  .disc-bar{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-right:6px}
+
+  /* INSIGHTS */
+  .insight-row{display:flex;gap:14px;align-items:flex-start}
+  .insight-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+  .insight-title{font-weight:600;font-size:14px;margin-bottom:3px}
+  .insight-text{font-size:13px;color:var(--ts);line-height:1.5}
+
+  /* NEW PRODUCTS */
+  .new-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .new-card{padding:14px;border-radius:10px;background:linear-gradient(135deg,#F8FAF8,#FFF);border:1px solid var(--border);text-align:center}
+  .new-card .name{font-weight:600;font-size:12px;color:var(--gd);margin-bottom:4px}
+  .new-card .qty{font-size:20px;font-weight:700;color:var(--g);font-family:'Playfair Display',serif}
+  .new-card .rev{font-size:11px;color:var(--ts);margin-top:2px}
+
+  .footer{text-align:center;padding:24px 40px 36px;font-size:12px;color:var(--ts);border-top:1px solid var(--border);margin:0 40px}
+  .footer a{color:var(--g);text-decoration:none}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .kpi-strip{animation:fadeUp .6s ease both}
+  .card{animation:fadeUp .6s ease both}
+  .card:nth-child(1){animation-delay:.08s}.card:nth-child(2){animation-delay:.14s}.card:nth-child(3){animation-delay:.2s}
+  .card:nth-child(4){animation-delay:.26s}.card:nth-child(5){animation-delay:.32s}.card:nth-child(6){animation-delay:.38s}
+  .card:nth-child(7){animation-delay:.44s}.card:nth-child(8){animation-delay:.5s}
+
+  @media(max-width:1100px){.main{grid-template-columns:1fr}.card.full{grid-column:1}.kpi-strip{grid-template-columns:repeat(2,1fr);margin:-28px 20px 0}.kpi:nth-child(2){border-right:none}.hero{padding:36px 24px 32px}.main{padding:28px 20px 48px}.channel-grid{grid-template-columns:1fr}.web-grid{grid-template-columns:1fr 1fr}.new-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:600px){.kpi-strip{grid-template-columns:1fr}.kpi{border-right:none;border-bottom:1px solid var(--border)}.kpi:last-child{border-bottom:none}.web-grid,.new-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="brand">
+      <div class="brand-logo">C</div>
+      <div class="brand-text">
+        <h1>Convita — Análisis de Productos</h1>
+        <div class="sub">Mix de ventas, canales, descuentos y oportunidades</div>
+      </div>
+    </div>
+    <div class="hero-date">Datos acumulados al Feb 2026</div>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">Facturación por Producto</div>
+    <div class="kpi-value">$19.9M</div>
+    <div class="kpi-sub">94,629 unidades vendidas</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Productos Activos</div>
+    <div class="kpi-value">60+</div>
+    <div class="badge green">11 categorías</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Ticket Promedio / Unidad</div>
+    <div class="kpi-value">$210</div>
+    <div class="kpi-sub">UYU promedio ponderado</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Canal Web</div>
+    <div class="kpi-value">5.3%</div>
+    <div class="badge gold">$1.05M — 3,722 uds</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Category Breakdown -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Facturación por Categoría</div>
+      <span class="card-tag">Todas las líneas</span>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name">Pizzas</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:100%;background:linear-gradient(90deg,var(--g),var(--gl));"><div class="tip">$5.07M — 30,641 uds</div></div></div>
+      <div class="cat-pct">25.6%</div>
+      <div class="cat-amt">$5.07M</div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name">Pastas</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:98%;background:linear-gradient(90deg,var(--g),var(--gl));"><div class="tip">$4.97M — 22,034 uds</div></div></div>
+      <div class="cat-pct">25.1%</div>
+      <div class="cat-amt">$4.97M</div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name">Empanadas</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:60%;background:linear-gradient(90deg,var(--g),var(--gl));"><div class="tip">$3.06M — 13,929 uds</div></div></div>
+      <div class="cat-pct">15.4%</div>
+      <div class="cat-amt">$3.06M</div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name">Milanesas</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:41%;background:linear-gradient(90deg,var(--g),var(--gl));"><div class="tip">$2.05M — 6,999 uds</div></div></div>
+      <div class="cat-pct">10.4%</div>
+      <div class="cat-amt">$2.05M</div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name">Panadería</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:33%;background:linear-gradient(90deg,var(--gold),#D4B85E);"><div class="tip">$1.68M — 8,324 uds</div></div></div>
+      <div class="cat-pct">8.5%</div>
+      <div class="cat-amt">$1.68M</div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name">Croquetas</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:25%;background:linear-gradient(90deg,var(--gold),#D4B85E);"><div class="tip">$1.28M — 3,854 uds</div></div></div>
+      <div class="cat-pct">6.5%</div>
+      <div class="cat-amt">$1.28M</div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name">Tartas</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:22%;background:linear-gradient(90deg,var(--gold),#D4B85E);"><div class="tip">$1.14M — 4,570 uds</div></div></div>
+      <div class="cat-pct">5.7%</div>
+      <div class="cat-amt">$1.14M</div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name">Helados</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:6.5%;background:linear-gradient(90deg,var(--o),var(--ol));"><div class="tip">$331K — 2,899 uds</div></div></div>
+      <div class="cat-pct">1.7%</div>
+      <div class="cat-amt">$331K</div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-name" style="font-size:11.5px;">Repostería + otros</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:2.5%;background:linear-gradient(90deg,#B0BEB5,#C8D0CA);"><div class="tip">Medialunas, snacks, repostería: $255K</div></div></div>
+      <div class="cat-pct">1.3%</div>
+      <div class="cat-amt">$255K</div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:var(--ts);">
+      <strong>Lectura rápida:</strong> Pizzas y Pastas solas representan el 50.7% de la facturación. Sumando Empanadas y Milanesas se cubre el 76.5%.
+    </div>
+  </div>
+
+  <!-- Channel Mix -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Mix por Canal / Tipo</div>
+      <span class="card-tag">Marca vs MDD</span>
+    </div>
+    <div class="channel-grid">
+      <svg class="donut-svg" viewBox="0 0 180 180">
+        <circle cx="90" cy="90" r="65" fill="none" stroke="var(--g)" stroke-width="26" stroke-dasharray="180 228" stroke-dashoffset="102" stroke-linecap="round"/>
+        <circle cx="90" cy="90" r="65" fill="none" stroke="var(--gl)" stroke-width="26" stroke-dasharray="87 321" stroke-dashoffset="-78" stroke-linecap="round"/>
+        <circle cx="90" cy="90" r="65" fill="none" stroke="#1565C0" stroke-width="26" stroke-dasharray="72 336" stroke-dashoffset="-165" stroke-linecap="round"/>
+        <circle cx="90" cy="90" r="65" fill="none" stroke="var(--o)" stroke-width="26" stroke-dasharray="69 339" stroke-dashoffset="-237" stroke-linecap="round"/>
+        <text x="90" y="82" text-anchor="middle" font-family="Playfair Display,serif" font-size="16" font-weight="700" fill="var(--gd)">$19.9M</text>
+        <text x="90" y="100" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="var(--ts)">total</text>
+      </svg>
+      <div class="channel-legend">
+        <div class="ch-item">
+          <div class="ch-dot" style="background:var(--g)"></div>
+          <div class="ch-info"><span class="ch-name">Marca Convita</span><span class="ch-val">$8.75M <span class="ch-pct">(44.0%)</span></span></div>
+        </div>
+        <div class="ch-item">
+          <div class="ch-dot" style="background:var(--gl)"></div>
+          <div class="ch-info"><span class="ch-name">A granel (sin marca)</span><span class="ch-val">$4.22M <span class="ch-pct">(21.2%)</span></span></div>
+        </div>
+        <div class="ch-item">
+          <div class="ch-dot" style="background:#1565C0"></div>
+          <div class="ch-info"><span class="ch-name">Crufi (marca blanca)</span><span class="ch-val">$3.51M <span class="ch-pct">(17.7%)</span></span></div>
+        </div>
+        <div class="ch-item">
+          <div class="ch-dot" style="background:var(--o)"></div>
+          <div class="ch-info"><span class="ch-name">La Spezia (marca blanca)</span><span class="ch-val">$3.35M <span class="ch-pct">(16.9%)</span></span></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:12px 16px;background:#FFF8F0;border-radius:10px;border:1px solid #F5E0CC;font-size:12.5px;color:var(--ts);line-height:1.5;">
+      <strong style="color:var(--od);">Atención:</strong> 34.5% de la facturación es marca blanca (Crufi + La Spezia). Esto genera volumen pero con menor margen y alta dependencia de dos clientes para un tercio del negocio.
+    </div>
+  </div>
+
+  <!-- Top 15 Products -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Top 15 Productos</div>
+      <span class="card-tag">Por facturación</span>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>#</th><th>Producto</th><th>Uds.</th><th>$/Ud</th><th>Facturación</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank top">1</span></td><td>Pizza Muzzarella <span class="mdd-tag crufi">CRUFI</span></td><td>23,810</td><td>$147</td><td class="val">$3,510,620</td></tr>
+          <tr><td><span class="rank top">2</span></td><td>Ravioles J&Q <span class="mdd-tag spezia">SPEZIA</span></td><td>7,065</td><td>$209</td><td class="val">$1,478,048</td></tr>
+          <tr><td><span class="rank top">3</span></td><td>Ravioles Verdura <span class="mdd-tag spezia">SPEZIA</span></td><td>6,588</td><td>$215</td><td class="val">$1,418,692</td></tr>
+          <tr><td><span class="rank">4</span></td><td>Pizza Muzzarella</td><td>3,868</td><td>$231</td><td class="val">$895,146</td></tr>
+          <tr><td><span class="rank">5</span></td><td>Empanadas de Carne x 3</td><td>3,897</td><td>$220</td><td class="val">$856,859</td></tr>
+          <tr><td><span class="rank">6</span></td><td>Milanesas de Carne x 4</td><td>2,116</td><td>$315</td><td class="val">$666,064</td></tr>
+          <tr><td><span class="rank">7</span></td><td>Milanesas de Pollo x 4</td><td>2,151</td><td>$281</td><td class="val">$604,942</td></tr>
+          <tr><td><span class="rank">8</span></td><td>Pizza Muzz. <span class="mdd-tag granel">GRANEL</span></td><td>2,568</td><td>$220</td><td class="val">$565,318</td></tr>
+          <tr><td><span class="rank">9</span></td><td>Pan de Queso x 6</td><td>3,461</td><td>$162</td><td class="val">$561,885</td></tr>
+          <tr><td><span class="rank">10</span></td><td>Ravioles J&Q 500g</td><td>1,475</td><td>$377</td><td class="val">$556,209</td></tr>
+          <tr><td><span class="rank">11</span></td><td>Emp. Carne <span class="mdd-tag granel">GRANEL</span></td><td>2,426</td><td>$213</td><td class="val">$516,099</td></tr>
+          <tr><td><span class="rank">12</span></td><td>Ravioles Verdura 500g</td><td>1,542</td><td>$330</td><td class="val">$509,406</td></tr>
+          <tr><td><span class="rank">13</span></td><td>Ñoquis <span class="mdd-tag spezia">SPEZIA</span></td><td>3,704</td><td>$123</td><td class="val">$455,444</td></tr>
+          <tr><td><span class="rank">14</span></td><td>Emp. Jamón y Queso x 3</td><td>2,049</td><td>$223</td><td class="val">$455,939</td></tr>
+          <tr><td><span class="rank">15</span></td><td>Pan de Queso <span class="mdd-tag granel">GRANEL</span></td><td>2,889</td><td>$152</td><td class="val">$439,773</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;font-size:11.5px;color:var(--ts);">
+      <strong>Pareto:</strong> Top 5 productos = 41% de la facturación. Top 10 = 55.9%.
+    </div>
+  </div>
+
+  <!-- Web Channel -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Canal Web — Top Productos</div>
+      <span class="card-tag">$1.05M · 5.3% del total</span>
+    </div>
+    <div class="web-grid">
+      <div class="web-card">
+        <div class="web-prod">Pizza Muzzarella</div>
+        <div class="web-val">$125,733</div>
+        <div class="web-sub">432 uds · 14% de sus ventas vía web</div>
+      </div>
+      <div class="web-card">
+        <div class="web-prod">Milanesas de Carne x 4</div>
+        <div class="web-val">$103,185</div>
+        <div class="web-sub">254 uds · 15.5% vía web</div>
+      </div>
+      <div class="web-card">
+        <div class="web-prod">Milanesas de Pollo x 4</div>
+        <div class="web-val">$85,674</div>
+        <div class="web-sub">233 uds · 14.2% vía web</div>
+      </div>
+      <div class="web-card">
+        <div class="web-prod">Empanadas de Carne x 3</div>
+        <div class="web-val">$57,256</div>
+        <div class="web-sub">206 uds · 6.7% vía web</div>
+      </div>
+      <div class="web-card">
+        <div class="web-prod">Pan Blanco 700g</div>
+        <div class="web-val">$55,407</div>
+        <div class="web-sub">229 uds · <strong style="color:var(--g);">37.3% vía web!</strong></div>
+      </div>
+      <div class="web-card">
+        <div class="web-prod">Tarta de Jamón y Queso</div>
+        <div class="web-val">$39,185</div>
+        <div class="web-sub">124 uds · <strong style="color:var(--g);">28.7% vía web</strong></div>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:12.5px;color:var(--ts);line-height:1.5;">
+      <strong>Dato clave:</strong> Pan Blanco y Tarta de Jamón y Queso tienen altísima penetración web (37% y 29%). Son productos que el consumidor final elige directamente. Milanesas y Pizzas lideran en volumen web absoluto.
+    </div>
+  </div>
+
+  <!-- Discount Analysis -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Análisis de Descuentos</div>
+      <span class="card-tag">Margen en riesgo</span>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Producto</th><th>Desc. %</th><th>Facturación</th></tr></thead>
+        <tbody>
+          <tr><td>Alfajor Helado Maracuyá</td><td><span class="disc-bar" style="width:60px;background:var(--o);"></span><strong style="color:var(--od);">20.5%</strong></td><td class="val">$129,288</td></tr>
+          <tr><td>Alfajor Helado Dulce de Leche</td><td><span class="disc-bar" style="width:52px;background:var(--o);"></span><strong style="color:var(--od);">17.9%</strong></td><td class="val">$174,249</td></tr>
+          <tr><td>Panettone Chocolate</td><td><span class="disc-bar" style="width:50px;background:var(--o);"></span><strong style="color:var(--od);">17.3%</strong></td><td class="val">$71,770</td></tr>
+          <tr><td>Fugazzeta</td><td><span class="disc-bar" style="width:43px;background:#E6A200;"></span><strong style="color:#8D6E1F;">14.7%</strong></td><td class="val">$65,909</td></tr>
+          <tr><td>Budín Carrot</td><td><span class="disc-bar" style="width:31px;background:#E6A200;"></span><strong style="color:#8D6E1F;">10.5%</strong></td><td class="val">$15,440</td></tr>
+          <tr><td>Tarta Pascualina</td><td><span class="disc-bar" style="width:22px;background:var(--g);"></span>7.3%</td><td class="val">$315,487</td></tr>
+          <tr style="background:#F8FAF8;"><td colspan="3" style="font-size:11.5px;color:var(--ts);text-align:left;padding:8px 12px;">Descuento promedio general: <strong>6.0%</strong> · Productos MDD (Crufi/Spezia): <strong>0–2.9%</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:12px;font-size:12.5px;color:var(--ts);line-height:1.5;">
+      Los alfajores helados tienen descuentos de ~20%, muy por encima del promedio de 6%. Evaluar si es política de penetración o si necesita corrección de precio lista.
+    </div>
+  </div>
+
+  <!-- Products in Testing -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Productos en Prueba / Lanzamiento</div>
+      <span class="card-tag">Bajo volumen</span>
+    </div>
+    <div class="new-grid">
+      <div class="new-card">
+        <div class="name">Bastones de Queso</div>
+        <div class="qty">113</div>
+        <div class="rev">$37,267 — con tracción</div>
+      </div>
+      <div class="new-card">
+        <div class="name">Croquetas de Arroz</div>
+        <div class="qty">48</div>
+        <div class="rev">$17,760 — $370/ud</div>
+      </div>
+      <div class="new-card">
+        <div class="name">Scones de Queso</div>
+        <div class="qty">35</div>
+        <div class="rev">$10,002 — testeo</div>
+      </div>
+      <div class="new-card">
+        <div class="name">Roll de Canela</div>
+        <div class="qty">74</div>
+        <div class="rev">$19,893 — web-driven</div>
+      </div>
+      <div class="new-card">
+        <div class="name">Pan Brioche</div>
+        <div class="qty">91</div>
+        <div class="rev">$29,788 — 82% web!</div>
+      </div>
+      <div class="new-card">
+        <div class="name">Pizza Pomodoro</div>
+        <div class="qty">142</div>
+        <div class="rev">$31,906 — potencial</div>
+      </div>
+      <div class="new-card">
+        <div class="name">Budín Carrot</div>
+        <div class="qty">36</div>
+        <div class="rev">$15,440 — $429/ud</div>
+      </div>
+      <div class="new-card">
+        <div class="name">Salchichón Choc. c/ Chispas</div>
+        <div class="qty">128</div>
+        <div class="rev">$48,273 — el más fuerte</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:12.5px;color:var(--ts);line-height:1.5;">
+      <strong>Candidatos a escalar:</strong> Bastones de Queso, Pizza Pomodoro y Salchichón de Chocolate tienen volumen suficiente para evaluar viabilidad comercial. Pan Brioche muestra que el canal web puede impulsar productos nuevos (82% de sus ventas vienen de la web).
+    </div>
+  </div>
+
+  <!-- Insights -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Insights Estratégicos</div>
+      <span class="card-tag">Para la dirección</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="insight-row">
+        <div class="insight-icon" style="background:var(--gm);">📊</div>
+        <div>
+          <div class="insight-title">Concentración de producto</div>
+          <div class="insight-text">Top 5 productos = 41% del revenue. Pizza Muzzarella Crufi sola es el 17.7%. Alta dependencia de pocos SKUs para gran parte del volumen.</div>
+        </div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-icon" style="background:var(--om);">⚠️</div>
+        <div>
+          <div class="insight-title">Dependencia de marca blanca</div>
+          <div class="insight-text">34.5% de las ventas son productos MDD (Crufi + La Spezia). Generan volumen pero con menor margen y riesgo de perder el cliente = perder un tercio del negocio.</div>
+        </div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-icon" style="background:#E3F2FD;">🌐</div>
+        <div>
+          <div class="insight-title">Web como laboratorio</div>
+          <div class="insight-text">El canal web (5.3%) funciona como testeo de productos nuevos: Pan Brioche (82% web), Roll de Canela (64% web). Ideal para validar SKUs antes de escalarlos al canal B2B.</div>
+        </div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-icon" style="background:#FFF8E1;">💡</div>
+        <div>
+          <div class="insight-title">Oportunidad: expandir Tartas</div>
+          <div class="insight-text">La categoría Tartas creció con 7 variedades pero solo representa 5.7%. Tarta Caprese ($109K) y Tarta Jamón y Queso ($137K) muestran demanda. Las tartas tienen buen ticket (~$260/ud) y son diferenciador vs competencia.</div>
+        </div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-icon" style="background:var(--plm);">🏷️</div>
+        <div>
+          <div class="insight-title">Descuentos en alfajores helados</div>
+          <div class="insight-text">Los alfajores helados tienen descuentos de 18–21%, más del triple del promedio (6%). Si es estrategia de penetración, debería tener fecha de fin. Si no, corregir precio lista.</div>
+        </div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-icon" style="background:var(--gm);">🥇</div>
+        <div>
+          <div class="insight-title">Core business claro</div>
+          <div class="insight-text">Pizzas + Pastas + Empanadas + Milanesas = 76.5% del revenue. Son los 4 pilares de Convita. Cualquier mejora de margen o eficiencia en estas líneas tiene impacto directo en el resultado.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>Convita</strong> — Integro SAS · General Pagola 1765, Montevideo, Uruguay · <a href="https://www.convita.com.uy">convita.com.uy</a> · Análisis de Productos — Febrero 2026
+</div>
+
+</body>
+</html>

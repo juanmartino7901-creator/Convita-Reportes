@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convita — Reportes de Gestión</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g:#1B5E3B;--gl:#2E7D52;--gd:#0D3D24;--gm:#E8F5E9;
+    --o:#E27530;--ol:#F09050;--od:#B85A1E;--om:#FFF3EB;
+    --cream:#FAFAF5;--text:#1A1A1A;--ts:#5A6B5E;--border:#D4E0D8;--card:#FFF;
+    --gold:#C8A951;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+
+  /* HERO */
+  .hero{
+    background:linear-gradient(135deg,var(--gd) 0%,var(--g) 40%,var(--gl) 100%);
+    padding:60px 56px 80px;position:relative;overflow:hidden;text-align:center;
+  }
+  .hero::before{content:'';position:absolute;top:-120px;right:-120px;width:500px;height:500px;background:radial-gradient(circle,rgba(200,169,81,.12) 0%,transparent 70%);border-radius:50%}
+  .hero::after{content:'';position:absolute;bottom:-80px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 70%);border-radius:50%}
+  .hero-content{position:relative;z-index:1}
+  .logo{
+    width:72px;height:72px;background:rgba(255,255,255,.15);border-radius:18px;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:#fff;
+    backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);margin-bottom:20px;
+  }
+  .hero h1{font-family:'Playfair Display',serif;font-size:42px;font-weight:700;color:#fff;letter-spacing:-1px;margin-bottom:8px}
+  .hero .tagline{font-size:16px;color:rgba(255,255,255,.75);font-weight:300;margin-bottom:6px}
+  .hero .date{font-size:13px;color:rgba(255,255,255,.5);margin-top:12px}
+
+  /* CARDS */
+  .cards-container{
+    max-width:960px;width:100%;margin:-44px auto 0;padding:0 32px;position:relative;z-index:2;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+  }
+  .report-card{
+    background:var(--card);border-radius:20px;overflow:hidden;
+    box-shadow:0 8px 32px rgba(27,94,59,.1);border:1px solid var(--border);
+    transition:transform .3s ease,box-shadow .3s ease;
+    text-decoration:none;color:var(--text);display:flex;flex-direction:column;
+  }
+  .report-card:hover{
+    transform:translateY(-6px);box-shadow:0 16px 48px rgba(27,94,59,.16);
+  }
+  .card-accent{height:6px;width:100%}
+  .card-accent.green{background:linear-gradient(90deg,var(--gd),var(--g),var(--gl))}
+  .card-accent.orange{background:linear-gradient(90deg,var(--od),var(--o),var(--ol))}
+  .card-accent.gold{background:linear-gradient(90deg,#8D6E1F,var(--gold),#D4B85E)}
+  .card-body{padding:32px 28px;flex:1;display:flex;flex-direction:column}
+  .card-icon{font-size:36px;margin-bottom:16px}
+  .card-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gd);margin-bottom:8px;line-height:1.2}
+  .card-desc{font-size:13.5px;color:var(--ts);line-height:1.6;flex:1;margin-bottom:20px}
+  .card-metrics{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+  .metric{font-size:10.5px;font-weight:600;padding:4px 10px;border-radius:100px}
+  .metric.green{background:var(--gm);color:var(--g)}
+  .metric.orange{background:var(--om);color:var(--od)}
+  .metric.gold{background:#FFF8E1;color:#8D6E1F}
+  .card-cta{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;
+    transition:background .2s,transform .1s;
+  }
+  .card-cta.green{background:var(--gm);color:var(--g)}
+  .card-cta.orange{background:var(--om);color:var(--od)}
+  .card-cta.gold{background:#FFF8E1;color:#8D6E1F}
+  .report-card:hover .card-cta.green{background:var(--g);color:#fff}
+  .report-card:hover .card-cta.orange{background:var(--o);color:#fff}
+  .report-card:hover .card-cta.gold{background:var(--gold);color:#fff}
+  .cta-arrow{transition:transform .3s}.report-card:hover .cta-arrow{transform:translateX(4px)}
+
+  /* FOOTER */
+  .footer-section{flex:1;display:flex;align-items:flex-end}
+  .footer{
+    width:100%;text-align:center;padding:48px 32px 32px;font-size:12px;color:var(--ts);
+  }
+  .footer a{color:var(--g);text-decoration:none}
+  .footer-brand{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--gd);margin-bottom:4px}
+  .footer-tagline{font-size:12px;color:var(--ts);margin-bottom:12px;font-style:italic}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  .report-card{animation:fadeUp .6s ease both}
+  .report-card:nth-child(1){animation-delay:.1s}
+  .report-card:nth-child(2){animation-delay:.2s}
+  .report-card:nth-child(3){animation-delay:.3s}
+
+  @media(max-width:900px){.cards-container{grid-template-columns:1fr;max-width:480px;padding:0 20px}.hero{padding:48px 24px 64px}.hero h1{font-size:32px}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="logo">C</div>
+    <h1>Reportes de Gestión</h1>
+    <div class="tagline">Sin gluten, sin complicaciones.</div>
+    <div class="date">Integro SAS · Datos actualizados a Febrero 2026</div>
+  </div>
+</div>
+
+<div class="cards-container">
+
+  <!-- Ventas -->
+  <a class="report-card" href="Convita_Dashboard_Ventas.html">
+    <div class="card-accent green"></div>
+    <div class="card-body">
+      <div class="card-icon">📈</div>
+      <div class="card-title">Dashboard de Ventas</div>
+      <div class="card-desc">Evolución de facturación, tendencia mensual, top 15 clientes, redes de distribución, recurrencia, frecuencia de compra y captación de clientes nuevos.</div>
+      <div class="card-metrics">
+        <span class="metric green">$19.9M en 2025</span>
+        <span class="metric green">+172% YoY</span>
+        <span class="metric green">809 clientes</span>
+      </div>
+      <div class="card-cta green">
+        Ver reporte completo
+        <span class="cta-arrow">→</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Cobranzas -->
+  <a class="report-card" href="Convita_Cobranzas_Feb2026.html">
+    <div class="card-accent orange"></div>
+    <div class="card-body">
+      <div class="card-icon">💰</div>
+      <div class="card-title">Análisis de Cobranzas</div>
+      <div class="card-desc">Antigüedad de saldos, semáforo de riesgo por cliente, desglose de redes, proceso de cobranzas propuesto y herramientas tecnológicas recomendadas.</div>
+      <div class="card-metrics">
+        <span class="metric orange">$4.65M CxC</span>
+        <span class="metric orange">54.5% vencido</span>
+        <span class="metric orange">48 días prom.</span>
+      </div>
+      <div class="card-cta orange">
+        Ver reporte completo
+        <span class="cta-arrow">→</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Productos -->
+  <a class="report-card" href="Convita_Productos_Analisis.html">
+    <div class="card-accent gold"></div>
+    <div class="card-body">
+      <div class="card-icon">📦</div>
+      <div class="card-title">Análisis de Productos</div>
+      <div class="card-desc">Mix de ventas por categoría y canal, marca propia vs marca blanca, análisis de descuentos, canal web y productos en fase de prueba.</div>
+      <div class="card-metrics">
+        <span class="metric gold">60+ productos</span>
+        <span class="metric gold">11 categorías</span>
+        <span class="metric gold">5.3% web</span>
+      </div>
+      <div class="card-cta gold">
+        Ver reporte completo
+        <span class="cta-arrow">→</span>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer-section">
+  <div class="footer">
+    <div class="footer-brand">Convita</div>
+    <div class="footer-tagline">Sin gluten, sin complicaciones.</div>
+    General Pagola 1765, Montevideo, Uruguay · <a href="https://www.convita.com.uy">convita.com.uy</a>
+  </div>
+</div>
+
+</body>
+</html>

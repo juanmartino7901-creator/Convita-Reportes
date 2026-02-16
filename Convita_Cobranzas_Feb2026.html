@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convita — Análisis de Cobranzas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange:#E27530; --orange-light:#F09050; --orange-dark:#B85A1E; --orange-muted:#FFF3EB;
+    --green:#1B5E3B; --green-dark:#0D3D24; --green-muted:#E8F5E9;
+    --cream:#FDFAF7; --text:#1A1A1A; --text-sec:#6B5E5A; --border:#E8DDD6; --card:#FFFFFF;
+    --red:#D32F2F; --red-lt:#FFEBEE; --amber:#E6A200; --amber-lt:#FFF8E1;
+    --ok:#2E7D52; --ok-lt:#E8F5E9; --purple:#5C6BC0; --purple-lt:#E8EAF6;
+    --shadow-sm:0 1px 3px rgba(180,100,40,.06); --shadow-md:0 4px 16px rgba(180,100,40,.08); --shadow-lg:0 8px 32px rgba(180,100,40,.12);
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+  .hero{background:linear-gradient(135deg,#8B3A0F 0%,var(--orange-dark) 30%,var(--orange) 70%,var(--orange-light) 100%);padding:44px 56px 38px;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:350px;height:350px;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);border-radius:50%}
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand-logo{width:48px;height:48px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2)}
+  .brand-text h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;color:#fff;letter-spacing:-.5px}
+  .brand-text .subtitle{font-size:14px;color:rgba(255,255,255,.85);font-weight:400;margin-top:2px}
+  .hero-date{color:rgba(255,255,255,.8);font-size:13px;background:rgba(255,255,255,.12);padding:8px 16px;border-radius:100px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15)}
+
+  .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);margin:-28px 40px 0;position:relative;z-index:2;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-lg);overflow:hidden}
+  .kpi{padding:26px 28px;border-right:1px solid var(--border)}
+  .kpi:last-child{border-right:none}
+  .kpi-label{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-sec);font-weight:500;margin-bottom:8px}
+  .kpi-value{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;line-height:1.1}
+  .kpi-value.orange{color:var(--orange)} .kpi-value.red{color:var(--red)} .kpi-value.green{color:var(--ok)} .kpi-value.amber{color:var(--amber)}
+  .kpi-sub{font-size:12px;color:var(--text-sec);margin-top:5px}
+  .badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-top:5px}
+  .badge.red{background:var(--red-lt);color:var(--red)} .badge.amber{background:var(--amber-lt);color:#8D6E1F} .badge.green{background:var(--ok-lt);color:var(--ok)} .badge.orange{background:var(--orange-muted);color:var(--orange-dark)} .badge.purple{background:var(--purple-lt);color:var(--purple)}
+
+  .main{padding:36px 40px 60px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:28px 32px;border:1px solid var(--border);transition:box-shadow .3s}
+  .card:hover{box-shadow:var(--shadow-md)}
+  .card.full{grid-column:1/-1}
+  .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+  .card-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--orange-dark)}
+  .card-tag{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);background:var(--orange-muted);padding:4px 12px;border-radius:100px;font-weight:500}
+
+  /* AGING */
+  .aging-container{display:flex;gap:12px}
+  .aging-bar-wrap{flex:1;text-align:center}
+  .aging-bar-outer{height:180px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+  .aging-bar{width:100%;border-radius:10px 10px 3px 3px;position:relative;cursor:default;transition:opacity .3s;min-height:6px}
+  .aging-bar:hover{opacity:.85}
+  .aging-bar .tip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:6px 12px;border-radius:8px;font-size:11px;white-space:nowrap;z-index:10}
+  .aging-bar:hover .tip{display:block}
+  .aging-amount{font-size:13px;font-weight:700;margin-top:8px}
+  .aging-label{font-size:11px;color:var(--text-sec);margin-top:4px;font-weight:500;line-height:1.3}
+  .aging-count{font-size:10px;color:var(--text-sec);margin-top:2px}
+
+  /* TABLE */
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{text-align:left;padding:10px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);font-weight:600;border-bottom:2px solid var(--orange)}
+  thead th:last-child,tbody td:last-child{text-align:right}
+  tbody tr{border-bottom:1px solid #F5F0EC;transition:background .2s}
+  tbody tr:hover{background:#FDF8F5}
+  tbody td{padding:11px 12px}
+  .risk-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  .risk-dot.high{background:var(--red)} .risk-dot.med{background:var(--amber)} .risk-dot.low{background:var(--ok)} .risk-dot.ok{background:#B0BEB5}
+  .amount-val{font-weight:600;font-variant-numeric:tabular-nums}
+  .amount-val.red{color:var(--red)} .amount-val.amber{color:var(--amber)}
+
+  /* NETWORK */
+  .net-section{margin-bottom:24px}.net-section:last-child{margin-bottom:0}
+  .net-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--orange-muted)}
+  .net-title{font-weight:700;font-size:14px;color:var(--orange-dark)}
+  .net-total{font-size:12px;color:var(--text-sec)}.net-total strong{color:var(--orange)}
+  .net-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .net-card{background:linear-gradient(135deg,#FDF8F5,#FFF);border:1px solid var(--border);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden}
+  .net-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px}
+  .net-card.rh::before{background:var(--red)} .net-card.rm::before{background:var(--amber)} .net-card.rl::before{background:var(--ok)}
+  .net-name{font-weight:600;font-size:12px;color:var(--text);margin-bottom:6px}
+  .ns{display:flex;justify-content:space-between;font-size:11px;color:var(--text-sec);margin-bottom:2px}
+  .ns strong{color:var(--text)}
+
+  /* ACTION */
+  .action-list{display:flex;flex-direction:column;gap:14px}
+  .action-item{display:flex;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#FDF8F5,#FFF);border:1px solid var(--border);border-radius:12px;position:relative;overflow:hidden}
+  .action-item::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%}
+  .action-item.urgent::before{background:var(--red)} .action-item.important::before{background:var(--amber)} .action-item.improve::before{background:var(--orange)} .action-item.system::before{background:var(--purple)} .action-item.tech::before{background:#00897B}
+  .action-p{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:800;color:#fff}
+  .action-p.p1{background:var(--red)} .action-p.p2{background:var(--amber)} .action-p.p3{background:var(--orange)} .action-p.p4{background:var(--purple)} .action-p.p5{background:#00897B}
+  .action-content{flex:1}
+  .action-title{font-weight:600;font-size:13.5px;margin-bottom:3px}
+  .action-desc{font-size:12.5px;color:var(--text-sec);line-height:1.5}
+  .action-impact{display:inline-flex;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:100px;margin-top:6px;margin-right:6px}
+  .action-impact.high{background:var(--red-lt);color:var(--red)} .action-impact.med{background:var(--amber-lt);color:#8D6E1F} .action-impact.tech{background:#E0F2F1;color:#00695C}
+
+  .note-box{padding:12px 16px;border-radius:10px;font-size:12.5px;color:var(--text-sec);line-height:1.5;margin-top:16px}
+  .note-box.orange{background:#FFF8F0;border:1px solid #F5E0CC}
+  .note-box.green{background:#F1F8F3;border:1px solid #C8E6C9}
+
+  /* PROCESS FLOW */
+  .flow-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+  .flow-step{text-align:center;padding:16px 10px;border-radius:12px;background:linear-gradient(135deg,#FDF8F5,#FFF);border:1px solid var(--border);position:relative}
+  .flow-step::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--border);font-weight:700}
+  .flow-step:last-child::after{display:none}
+  .flow-num{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-bottom:8px}
+  .flow-label{font-size:11.5px;font-weight:600;color:var(--orange-dark);margin-bottom:4px;line-height:1.3}
+  .flow-desc{font-size:10.5px;color:var(--text-sec);line-height:1.4}
+
+  /* TECH CARDS */
+  .tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .tech-card{padding:20px;border-radius:12px;background:linear-gradient(135deg,#F5F8FA,#FFF);border:1px solid #D6E4ED;position:relative;overflow:hidden}
+  .tech-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,#00897B,#26A69A)}
+  .tech-icon{font-size:22px;margin-bottom:10px}
+  .tech-title{font-weight:700;font-size:13.5px;color:#00695C;margin-bottom:6px}
+  .tech-desc{font-size:12px;color:var(--text-sec);line-height:1.5}
+  .tech-tag{display:inline-flex;font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;background:#E0F2F1;color:#00695C;margin-top:8px}
+
+  .footer{text-align:center;padding:24px 40px 36px;font-size:12px;color:var(--text-sec);border-top:1px solid var(--border);margin:0 40px}
+  .footer a{color:var(--orange);text-decoration:none}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .kpi-strip{animation:fadeUp .6s ease both}
+  .card{animation:fadeUp .6s ease both}
+  .card:nth-child(1){animation-delay:.08s}.card:nth-child(2){animation-delay:.14s}.card:nth-child(3){animation-delay:.2s}
+  .card:nth-child(4){animation-delay:.26s}.card:nth-child(5){animation-delay:.32s}.card:nth-child(6){animation-delay:.38s}
+  .card:nth-child(7){animation-delay:.44s}.card:nth-child(8){animation-delay:.5s}.card:nth-child(9){animation-delay:.56s}
+  .card:nth-child(10){animation-delay:.62s}
+
+  @media(max-width:1100px){.main{grid-template-columns:1fr}.card.full{grid-column:1}.kpi-strip{grid-template-columns:repeat(2,1fr);margin:-28px 20px 0}.kpi:nth-child(2){border-right:none}.hero{padding:36px 24px 32px}.main{padding:28px 20px 48px}.net-grid,.tech-grid{grid-template-columns:repeat(2,1fr)}.flow-steps{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:600px){.kpi-strip{grid-template-columns:1fr}.kpi{border-right:none;border-bottom:1px solid var(--border)}.kpi:last-child{border-bottom:none}.net-grid,.tech-grid{grid-template-columns:1fr}.flow-steps{grid-template-columns:1fr}.flow-step::after{display:none}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="brand">
+      <div class="brand-logo">C</div>
+      <div class="brand-text">
+        <h1>Convita — Cobranzas</h1>
+        <div class="subtitle">Análisis de cuentas por cobrar, riesgos y plan de acción</div>
+      </div>
+    </div>
+    <div class="hero-date">Corte: 16 Feb 2026</div>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">CxC Operativo Real</div>
+    <div class="kpi-value orange">$4.65M</div>
+    <div class="kpi-sub">346 facturas (excl. Casa & Dispensa)</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Monto Vencido</div>
+    <div class="kpi-value red">$2.53M</div>
+    <div class="badge red">54.5% del CxC operativo</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Corriente (Por Vencer)</div>
+    <div class="kpi-value green">$2.12M</div>
+    <div class="kpi-sub">101 facturas dentro de plazo</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Días Vencidos Prom. Pond.</div>
+    <div class="kpi-value amber">48 días</div>
+    <div class="badge amber">~$227K probables errores de sistema</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Aging -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Antigüedad de Saldos (Aging)</div>
+      <span class="card-tag">Excluye Casa & Dispensa</span>
+    </div>
+    <div class="aging-container">
+      <div class="aging-bar-wrap">
+        <div class="aging-bar-outer"><div class="aging-bar" style="height:100%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">101 facturas por vencer — $2,114,719</div></div></div>
+        <div class="aging-amount" style="color:var(--ok);">$2.11M</div>
+        <div class="aging-label">No vencido</div>
+        <div class="aging-count">101 fact.</div>
+      </div>
+      <div class="aging-bar-wrap">
+        <div class="aging-bar-outer"><div class="aging-bar" style="height:57%;background:linear-gradient(180deg,#FFE082,var(--amber));"><div class="tip">79 facturas 0–30 días — $1,205,393</div></div></div>
+        <div class="aging-amount" style="color:var(--amber);">$1.21M</div>
+        <div class="aging-label">0–30 días</div>
+        <div class="aging-count">79 fact.</div>
+      </div>
+      <div class="aging-bar-wrap">
+        <div class="aging-bar-outer"><div class="aging-bar" style="height:26%;background:linear-gradient(180deg,var(--orange-light),var(--orange));"><div class="tip">56 facturas 31–60 días — $557,611</div></div></div>
+        <div class="aging-amount" style="color:var(--orange);">$558K</div>
+        <div class="aging-label">31–60 días</div>
+        <div class="aging-count">56 fact.</div>
+      </div>
+      <div class="aging-bar-wrap">
+        <div class="aging-bar-outer"><div class="aging-bar" style="height:19%;background:linear-gradient(180deg,#EF9A9A,#E57373);"><div class="tip">32 facturas 61–90 días — $397,070</div></div></div>
+        <div class="aging-amount" style="color:#E57373;">$397K</div>
+        <div class="aging-label">61–90 días</div>
+        <div class="aging-count">32 fact.</div>
+      </div>
+      <div class="aging-bar-wrap">
+        <div class="aging-bar-outer"><div class="aging-bar" style="height:12%;background:linear-gradient(180deg,#EF5350,var(--red));"><div class="tip">40 facturas 91–180 días — $243,842</div></div></div>
+        <div class="aging-amount" style="color:var(--red);">$244K</div>
+        <div class="aging-label">91–180 días</div>
+        <div class="aging-count">40 fact.</div>
+      </div>
+      <div class="aging-bar-wrap">
+        <div class="aging-bar-outer"><div class="aging-bar" style="height:6%;background:linear-gradient(180deg,#C62828,#8B0000);"><div class="tip">38 facturas 180+ días — $131,394 — mayoría errores de sistema</div></div></div>
+        <div class="aging-amount" style="color:#8B0000;">$131K</div>
+        <div class="aging-label">180+ días</div>
+        <div class="aging-count">38 fact.</div>
+      </div>
+    </div>
+    <div class="note-box orange">
+      <strong style="color:var(--orange-dark);">Notas:</strong> Casa & Dispensa ($693K) se excluye de este análisis por ser empresa del grupo con condiciones especiales. Facturas >300 días (~$43K) y particulares antiguos (~$184K) son probables errores de sistema o cobros no registrados.
+    </div>
+  </div>
+
+  <!-- Top Debtors -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Principales Deudores — Semáforo de Riesgo</div>
+      <span class="card-tag">Excluye Casa & Dispensa</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Riesgo</th><th>Cliente</th><th>Fact.</th><th>Máx. Días Venc.</th><th>Saldo</th></tr></thead>
+        <tbody>
+          <tr><td><span class="risk-dot low"></span>Bajo</td><td><strong>La Spezia</strong></td><td>9</td><td>11 días</td><td class="amount-val">$784,718</td></tr>
+          <tr><td><span class="risk-dot ok"></span>Al día</td><td><strong>Crufi</strong></td><td>3</td><td>No vencido</td><td class="amount-val">$477,383</td></tr>
+          <tr><td><span class="risk-dot high"></span>Alto</td><td><strong>La Casa de los Congelados</strong></td><td>17</td><td>155 días</td><td class="amount-val red">$355,883</td></tr>
+          <tr><td><span class="risk-dot med"></span>Medio</td><td><strong>Portisur (Red)</strong> <span style="font-size:10px;color:var(--text-sec);">— 7 suc.</span></td><td>28</td><td>73 días</td><td class="amount-val amber">$346,186</td></tr>
+          <tr><td><span class="risk-dot med"></span>Medio</td><td><strong>La Molienda Arocena</strong></td><td>17</td><td>64 días</td><td class="amount-val amber">$191,615</td></tr>
+          <tr><td><span class="risk-dot med"></span>Medio</td><td>5 Océanos - Berro</td><td>8</td><td>46 días</td><td class="amount-val">$165,235</td></tr>
+          <tr><td><span class="risk-dot low"></span>Bajo</td><td>5 Estrellas</td><td>4</td><td>12 días</td><td class="amount-val">$140,250</td></tr>
+          <tr><td><span class="risk-dot high"></span>Alto</td><td>Macromercado Maldonado</td><td>11</td><td>170 días</td><td class="amount-val red">$131,899</td></tr>
+          <tr><td><span class="risk-dot med"></span>Medio</td><td>La Molienda Punta Carretas</td><td>10</td><td>67 días</td><td class="amount-val">$117,495</td></tr>
+          <tr><td><span class="risk-dot low"></span>Bajo</td><td>Supersol</td><td>3</td><td>22 días</td><td class="amount-val">$114,382</td></tr>
+          <tr><td><span class="risk-dot med"></span>Medio</td><td>Hola Congelados Roosevelt</td><td>9</td><td>88 días</td><td class="amount-val">$110,447</td></tr>
+          <tr><td><span class="risk-dot high"></span>Alto</td><td>La Molienda ACJ</td><td>13</td><td>339 días*</td><td class="amount-val red">$99,851</td></tr>
+          <tr><td><span class="risk-dot high"></span>Alto</td><td>Macromercado Carrasco</td><td>10</td><td>81 días</td><td class="amount-val red">$91,972</td></tr>
+          <tr><td><span class="risk-dot high"></span>Alto</td><td>Graviola</td><td>10</td><td>149 días</td><td class="amount-val red">$92,299</td></tr>
+          <tr><td><span class="risk-dot ok"></span>Al día</td><td>GHANIMA</td><td>2</td><td>No vencido</td><td class="amount-val">$88,650</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--text-sec);">* Facturas muy antiguas (ACJ 339d, Macro SM 375d) probablemente son errores de sistema no regularizados.</div>
+  </div>
+
+  <!-- Redes -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Redes de Distribución — CxC</div>
+      <span class="card-tag">Desglose por sucursal</span>
+    </div>
+    <div class="net-section">
+      <div class="net-header"><div class="net-title">La Molienda</div><div class="net-total"><strong>$699K</strong> · 7 sucursales</div></div>
+      <div class="net-grid">
+        <div class="net-card rm"><div class="net-name">Arocena</div><div class="ns"><span>Deuda</span><strong>$191,615</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">64d</strong></div></div>
+        <div class="net-card rm"><div class="net-name">Punta Carretas</div><div class="ns"><span>Deuda</span><strong>$117,495</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">67d</strong></div></div>
+        <div class="net-card rh"><div class="net-name">ACJ</div><div class="ns"><span>Deuda</span><strong>$99,851</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--red);">339d*</strong></div></div>
+        <div class="net-card rm"><div class="net-name">Costa Urbana</div><div class="ns"><span>Deuda</span><strong>$94,607</strong></div><div class="ns"><span>Máx vencido</span><strong>46d</strong></div></div>
+        <div class="net-card rm"><div class="net-name">Ejido</div><div class="ns"><span>Deuda</span><strong>$74,680</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">79d</strong></div></div>
+        <div class="net-card rm"><div class="net-name">Convención</div><div class="ns"><span>Deuda</span><strong>$69,093</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">66d</strong></div></div>
+        <div class="net-card rm"><div class="net-name">Ciudad Vieja</div><div class="ns"><span>Deuda</span><strong>$51,643</strong></div><div class="ns"><span>Máx vencido</span><strong>57d</strong></div></div>
+      </div>
+    </div>
+    <div class="net-section">
+      <div class="net-header"><div class="net-title">Macromercado</div><div class="net-total"><strong>$397K</strong> · 4 sucursales</div></div>
+      <div class="net-grid">
+        <div class="net-card rh"><div class="net-name">Maldonado</div><div class="ns"><span>Deuda</span><strong>$131,899</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--red);">170d</strong></div></div>
+        <div class="net-card rh"><div class="net-name">San Martín</div><div class="ns"><span>Deuda</span><strong>$108,204</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--red);">375d*</strong></div></div>
+        <div class="net-card rm"><div class="net-name">Carrasco</div><div class="ns"><span>Deuda</span><strong>$91,972</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">81d</strong></div></div>
+        <div class="net-card rl"><div class="net-name">Las Piedras</div><div class="ns"><span>Deuda</span><strong>$64,535</strong></div><div class="ns"><span>Máx vencido</span><strong>25d</strong></div></div>
+      </div>
+    </div>
+    <div class="net-section">
+      <div class="net-header"><div class="net-title">Portisur</div><div class="net-total"><strong>$346K</strong> · 7 sucursales · patrón coordinado</div></div>
+      <div class="net-grid">
+        <div class="net-card rm"><div class="net-name">Orinoco</div><div class="ns"><span>Deuda</span><strong>$63,753</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">73d</strong></div></div>
+        <div class="net-card rm"><div class="net-name">Av. Italia</div><div class="ns"><span>Deuda</span><strong>$60,708</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">73d</strong></div></div>
+        <div class="net-card rm"><div class="net-name">Av. Brasil</div><div class="ns"><span>Deuda</span><strong>$57,672</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">73d</strong></div></div>
+        <div class="net-card rm"><div class="net-name">San José + 3 más</div><div class="ns"><span>Deuda</span><strong>$164,053</strong></div><div class="ns"><span>Máx vencido</span><strong style="color:var(--amber);">73d</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Semáforo Directivo -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Semáforo para la Dirección</div>
+      <span class="card-tag">Visión ejecutiva</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+      <div style="padding:20px;border-radius:12px;background:var(--ok-lt);border:1px solid #C8E6C9;text-align:center;">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ok);font-weight:600;margin-bottom:8px;">Saludable</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ok);">$2.12M</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:4px;">Corriente + no vencido<br>La Spezia, Crufi, GHANIMA, Supersol</div>
+      </div>
+      <div style="padding:20px;border-radius:12px;background:var(--amber-lt);border:1px solid #FFE082;text-align:center;">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8D6E1F;font-weight:600;margin-bottom:8px;">Requiere Gestión Activa</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--amber);">$2.16M</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:4px;">Vencido 0–90 días, cobrable<br>Moliendas, Portisur, 5 Océanos</div>
+      </div>
+      <div style="padding:20px;border-radius:12px;background:var(--red-lt);border:1px solid #FFCDD2;text-align:center;">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--red);font-weight:600;margin-bottom:8px;">Riesgo de Incobrabilidad</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--red);">$375K</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:4px;">90+ días (excluyendo errores de sistema)<br>La Casa Congelados, Graviola</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones Inmediatas -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Plan de Acción Inmediato</div>
+      <span class="card-tag">Priorizado por impacto</span>
+    </div>
+    <div class="action-list">
+      <div class="action-item urgent">
+        <div class="action-p p1">1</div>
+        <div class="action-content">
+          <div class="action-title">La Casa de los Congelados — suspensión + plan de pagos</div>
+          <div class="action-desc">17 facturas, $355K, máximo 155 días. No es un atraso puntual sino un patrón crónico. Suspender nuevos despachos hasta acuerdo de plan de pagos escalonado. Definir un plazo máximo (ej: 90 días para regularizar). Si no cumple, derivar a gestión pre-legal.</div>
+          <div class="action-impact high">$355,883 en riesgo</div>
+        </div>
+      </div>
+      <div class="action-item urgent">
+        <div class="action-p p1">2</div>
+        <div class="action-content">
+          <div class="action-title">Portisur — reunión con pagaduría central</div>
+          <div class="action-desc">Las 7 sucursales tienen exactamente 73 días de mora, indicando una retención centralizada. Solicitar reunión esta semana con el responsable de pagos de la cadena. Definir plazos formales y considerar descuento por pronto pago para incentivar regularización.</div>
+          <div class="action-impact high">$346,186 en riesgo</div>
+        </div>
+      </div>
+      <div class="action-item important">
+        <div class="action-p p2">3</div>
+        <div class="action-content">
+          <div class="action-title">La Molienda — negociación centralizada</div>
+          <div class="action-desc">$699K distribuidos en 7 sucursales. Negociar como red única. ACJ tiene facturas de marzo 2025 (probablemente errores parciales), Arocena concentra el mayor saldo real ($191K). Proponer acuerdo marco de pago a 30 días con la cadena.</div>
+          <div class="action-impact med">$699K a gestionar</div>
+        </div>
+      </div>
+      <div class="action-item important">
+        <div class="action-p p2">4</div>
+        <div class="action-content">
+          <div class="action-title">Macromercado — auditoría + gestión</div>
+          <div class="action-desc">San Martín con 375 días es casi seguro error de sistema. Maldonado con 170 días sí requiere gestión real. Cruzar con el equipo que opera la cuenta (la red creció +317% en ventas). Verificar y limpiar facturas antiguas, luego gestionar las reales.</div>
+          <div class="action-impact med">$397K a auditar</div>
+        </div>
+      </div>
+      <div class="action-item improve">
+        <div class="action-p p3">5</div>
+        <div class="action-content">
+          <div class="action-title">Graviola — gestión directa</div>
+          <div class="action-desc">$92K con 149 días máximo. 10 facturas abiertas. Contacto directo y evaluar capacidad de pago. Si no responde en 15 días, escalar y condicionar nuevos pedidos.</div>
+          <div class="action-impact med">$92,299 en riesgo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Propuesta de Proceso -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Proceso de Cobranzas Propuesto</div>
+      <span class="card-tag">Hoy no existe — implementar</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-sec);margin-bottom:20px;line-height:1.5;">Actualmente Convita no tiene un flujo de cobranzas definido. Se propone el siguiente proceso escalonado, que puede implementarse de forma gradual:</p>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-label">Recordatorio automático</div>
+        <div class="flow-desc">Email/WhatsApp automático 3 días antes del vencimiento con detalle de la factura.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-label">Primer aviso</div>
+        <div class="flow-desc">Día +3 post-vencimiento: notificación de mora amigable con estado de cuenta actualizado.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-label">Gestión activa</div>
+        <div class="flow-desc">Día +15: llamada telefónica del responsable. Registrar compromiso de pago con fecha.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-label">Escalamiento</div>
+        <div class="flow-desc">Día +30: alerta a dirección. Bloqueo de nuevos despachos hasta pago o plan acordado.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-label">Acción formal</div>
+        <div class="flow-desc">Día +60: carta formal. Día +90: derivación a gestión pre-legal. Provisión contable.</div>
+      </div>
+    </div>
+    <div class="note-box green" style="margin-top:20px;">
+      <strong style="color:var(--ok);">Rol sugerido:</strong> Asignar a una persona (puede ser de administración) como responsable de cobranzas con dedicación parcial (estimado 8–10 horas/semana). Su responsabilidad: ejecutar los pasos 1–3, escalar los casos a dirección, y mantener actualizado el aging semanal. Con el volumen actual (~350 facturas abiertas), es manejable sin contratar personal nuevo.
+    </div>
+  </div>
+
+  <!-- Herramientas Tecnológicas -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Herramientas y Tecnología Recomendada</div>
+      <span class="card-tag">Implementación técnica</span>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon">⚙️</div>
+        <div class="tech-title">Automatización en Odoo</div>
+        <div class="tech-desc">Configurar las acciones automatizadas de seguimiento de pago que ya trae Odoo (Follow-up Levels). Definir los 5 niveles del proceso propuesto con plantillas de email. Activar el bloqueo automático de ventas a clientes morosos (+30 días).</div>
+        <div class="tech-tag">Costo: $0 — ya incluido en Odoo</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">📊</div>
+        <div class="tech-title">Dashboard de Aging Semanal</div>
+        <div class="tech-desc">Generar un reporte automático semanal desde Odoo con el aging actualizado y enviarlo a dirección todos los lunes. Puede hacerse con las herramientas nativas de reportes o con un export programado a Google Sheets.</div>
+        <div class="tech-tag">Costo: $0 — configuración interna</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">💬</div>
+        <div class="tech-title">WhatsApp Business para Cobranzas</div>
+        <div class="tech-desc">Usar WhatsApp Business (gratis) para los recordatorios previos a vencimiento y primeros avisos. Los clientes lo ven más rápido que un email. Crear plantillas de mensajes estandarizados con tono profesional pero cercano.</div>
+        <div class="tech-tag">Costo: $0 — WhatsApp Business gratis</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">📋</div>
+        <div class="tech-title">Política de Crédito Formal</div>
+        <div class="tech-desc">Documentar una política con: límite de crédito por cliente (basado en historial), plazos de pago estándar (ej: 30 días), condiciones de bloqueo, y excepciones autorizadas (como Casa & Dispensa). Comunicarla a todos los clientes.</div>
+        <div class="tech-tag">Impacto: preventivo — reduce mora futura</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🔄</div>
+        <div class="tech-title">Conciliación Mensual</div>
+        <div class="tech-desc">Implementar una rutina mensual de conciliación: cruzar pagos recibidos con facturas abiertas, limpiar errores de sistema, y registrar cobros de particulares. Esto resuelve el problema de los ~$227K en datos sucios del aging actual.</div>
+        <div class="tech-tag">Dedicación: ~4 horas/mes</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🎯</div>
+        <div class="tech-title">Scoring de Riesgo Interno</div>
+        <div class="tech-desc">Crear un scoring simple: combinar días de mora promedio, monto adeudado y frecuencia de atrasos para categorizar clientes en verde/amarillo/rojo. Usar esto para definir automáticamente quién puede comprar a crédito y con qué límite.</div>
+        <div class="tech-tag">Implementable en planilla o en Odoo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Limpieza de sistema -->
+  <div class="card full">
+    <div class="card-header">
+      <div class="card-title">Acción Inmediata: Limpieza de Datos</div>
+      <span class="card-tag">Prerrequisito para todo lo demás</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+      <div style="padding:18px;border-radius:12px;background:var(--purple-lt);border:1px solid #C5CAE9;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🗑️</div>
+        <div style="font-weight:700;font-size:14px;color:var(--purple);margin-bottom:4px;">63 facturas particulares</div>
+        <div style="font-size:12.5px;color:var(--text-sec);">~$184K probablemente cobrados sin registrar. Verificar y cerrar en Odoo.</div>
+      </div>
+      <div style="padding:18px;border-radius:12px;background:var(--purple-lt);border:1px solid #C5CAE9;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+        <div style="font-weight:700;font-size:14px;color:var(--purple);margin-bottom:4px;">10 facturas >300 días</div>
+        <div style="font-size:12.5px;color:var(--text-sec);">~$43K entre Macro SM, ACJ, Cafelino y particulares. Auditar una por una.</div>
+      </div>
+      <div style="padding:18px;border-radius:12px;background:var(--purple-lt);border:1px solid #C5CAE9;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">✅</div>
+        <div style="font-weight:700;font-size:14px;color:var(--purple);margin-bottom:4px;">Resultado esperado</div>
+        <div style="font-size:12.5px;color:var(--text-sec);">Aging limpio y confiable como base para el nuevo proceso de cobranzas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conclusión -->
+  <div class="card full" style="border:2px solid var(--orange);background:linear-gradient(135deg,#FFF8F0,#FFF);">
+    <div class="card-header">
+      <div class="card-title" style="font-size:22px;">Conclusión y Próximos Pasos</div>
+    </div>
+    <div style="font-size:14px;line-height:1.7;color:var(--text-sec);">
+      <p>La situación de cobranzas de Convita es <strong style="color:var(--orange-dark);">manejable pero requiere estructura urgente</strong>. De los $4.65M en CxC operativo, $2.12M están corrientes y los clientes principales (La Spezia, Crufi) pagan en plazos razonables.</p>
+      <p style="margin-top:12px;">Los <strong style="color:var(--red);">focos de riesgo real</strong> son acotados: La Casa de los Congelados ($355K), Portisur ($346K) y Graviola ($92K) concentran los casos que requieren acción inmediata. El resto es mayormente gestión de cobro normal en clientes activos.</p>
+      <p style="margin-top:12px;">El problema de fondo no es la morosidad sino <strong style="color:var(--orange-dark);">la ausencia total de un proceso de cobranzas</strong>. Implementar el flujo de 5 pasos propuesto, asignar un responsable parcial, y activar las herramientas nativas de Odoo puede transformar la gestión en 30 días con inversión cercana a cero.</p>
+      <div style="margin-top:18px;padding:14px 18px;background:var(--orange-muted);border-radius:10px;border:1px solid #F5D4BC;">
+        <strong style="color:var(--orange-dark);">Primeras 2 semanas:</strong> (1) Limpiar datos del sistema. (2) Contactar La Casa de los Congelados y Portisur. (3) Designar responsable de cobranzas. (4) Activar follow-ups de Odoo. — Con estas 4 acciones se ataca el 80% del problema.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <strong>Convita</strong> — Integro SAS · General Pagola 1765, Montevideo, Uruguay · <a href="https://www.convita.com.uy">convita.com.uy</a> · Reporte de Cobranzas — Febrero 2026
+</div>
+
+</body>
+</html>
