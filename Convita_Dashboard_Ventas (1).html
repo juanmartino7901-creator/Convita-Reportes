@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convita – Dashboard de Ventas · Mayo 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1B5E3B;--green-light:#2E7D52;--green-dark:#0D3D24;--green-muted:#E8F5E9;--cream:#FAFAF5;--gold:#C8A951;--text:#1A1A1A;--text-sec:#5A6B5E;--border:#D4E0D8;--card:#FFFFFF;--red:#D32F2F;--red-lt:#FFEBEE;--amber:#E6A200;--amber-lt:#FFF8E1;--ok:#2E7D52;--ok-lt:#E8F5E9;--purple:#5C6BC0;--purple-lt:#E8EAF6;--shadow-sm:0 1px 3px rgba(27,94,59,.06);--shadow-md:0 4px 16px rgba(27,94,59,.08);--shadow-lg:0 8px 32px rgba(27,94,59,.12);--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+.hero{background:linear-gradient(135deg,var(--green-dark) 0%,var(--green) 40%,var(--green-light) 100%);padding:48px 56px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(200,169,81,.15) 0%,transparent 70%);border-radius:50%}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{width:48px;height:48px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2)}
+.brand-text h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:#fff;letter-spacing:-.5px}
+.brand-text span{font-size:13px;color:rgba(255,255,255,.7);font-weight:300}
+.hero-date{color:rgba(255,255,255,.8);font-size:13px;background:rgba(255,255,255,.1);padding:8px 16px;border-radius:100px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15)}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);margin:-28px 40px 0;position:relative;z-index:2;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-lg);overflow:hidden}
+.kpi{padding:28px 32px;border-right:1px solid var(--border)}.kpi:last-child{border-right:none}
+.kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-sec);font-weight:500;margin-bottom:8px}
+.kpi-value{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;line-height:1.1}
+.kpi-value.green{color:var(--green)}.kpi-value.gold{color:var(--gold)}.kpi-value.ok{color:var(--ok)}.kpi-value.amber{color:var(--amber)}
+.kpi-sub{font-size:12px;color:var(--text-sec);margin-top:5px}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-top:5px}
+.badge.green{background:var(--ok-lt);color:var(--ok)}.badge.gold{background:#FFF8E1;color:#8D6E1F}
+.main{padding:36px 40px 60px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:28px 32px;border:1px solid var(--border);transition:box-shadow .3s}
+.card:hover{box-shadow:var(--shadow-md)}.card.full{grid-column:1/-1}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.card-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--green-dark)}
+.card-tag{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);background:var(--green-muted);padding:4px 12px;border-radius:100px;font-weight:500}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:180px;padding-top:10px}
+.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:6px 6px 2px 2px;min-height:3px;position:relative;transition:opacity .3s;cursor:default}
+.bar:hover{opacity:.8}
+.bar .tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--green-dark);color:#fff;padding:4px 10px;border-radius:6px;font-size:10px;white-space:nowrap;z-index:10}
+.bar:hover .tip{display:block}
+.bar-label{font-size:9px;color:var(--text-sec);font-weight:500;text-align:center;line-height:1.2}
+.bar-amount{font-size:9px;font-weight:700;color:var(--text)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:10px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);font-weight:600;border-bottom:2px solid var(--green)}
+thead th:last-child,tbody td:last-child{text-align:right}
+tbody tr{border-bottom:1px solid #F0F4F1;transition:background .2s}
+tbody tr:hover{background:#F8FAF8}
+tbody td{padding:11px 12px}
+.amount-val{font-weight:600;font-variant-numeric:tabular-nums}
+.amount-val.red{color:var(--red)}.amount-val.amber{color:var(--amber)}
+.risk-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.risk-dot.high{background:var(--red)}.risk-dot.med{background:var(--amber)}.risk-dot.low{background:var(--ok)}.risk-dot.ok{background:#B0BEB5}
+.net-section{margin-bottom:24px}.net-section:last-child{margin-bottom:0}
+.net-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--green-muted)}
+.net-title{font-weight:700;font-size:14px;color:var(--green-dark)}
+.net-total{font-size:12px;color:var(--text-sec)}.net-total strong{color:var(--green)}
+.net-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.net-card{background:linear-gradient(135deg,#F8FAF8,#FFF);border:1px solid var(--border);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.net-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.net-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:var(--green)}
+.net-name{font-weight:600;font-size:12px;color:var(--text);margin-bottom:6px}
+.ns{display:flex;justify-content:space-between;font-size:11px;color:var(--text-sec);margin-bottom:2px}.ns strong{color:var(--text)}
+.comp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.comp-card{padding:20px;border-radius:12px;background:linear-gradient(135deg,#F8FAF8,#FFF);border:1px solid var(--border);text-align:center}
+.comp-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);margin-bottom:6px;font-weight:500}
+.comp-value{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1.1}
+.comp-sub{font-size:11.5px;color:var(--text-sec);margin-top:4px}
+.note-box{padding:12px 16px;border-radius:10px;font-size:12.5px;color:var(--text-sec);line-height:1.5;margin-top:16px}
+.note-box.green{background:#F1F8F3;border:1px solid #C8E6C9}
+.note-box.gold{background:#FFF8E1;border:1px solid #F5E0BC}
+.footer{text-align:center;padding:24px 40px 36px;font-size:12px;color:var(--text-sec);border-top:1px solid var(--border);margin:0 40px}
+.footer a{color:var(--green);text-decoration:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.kpi-strip{animation:fadeUp .6s ease both}
+.card{animation:fadeUp .6s ease both}
+.card:nth-child(1){animation-delay:.08s}.card:nth-child(2){animation-delay:.14s}.card:nth-child(3){animation-delay:.2s}.card:nth-child(4){animation-delay:.26s}.card:nth-child(5){animation-delay:.32s}.card:nth-child(6){animation-delay:.38s}.card:nth-child(7){animation-delay:.44s}.card:nth-child(8){animation-delay:.5s}.card:nth-child(9){animation-delay:.56s}
+@media(max-width:1100px){.main{grid-template-columns:1fr}.card.full{grid-column:1}.kpi-strip{grid-template-columns:repeat(2,1fr);margin:-28px 20px 0}.kpi:nth-child(2){border-right:none}.hero{padding:36px 24px 32px}.main{padding:28px 20px 48px}.net-grid{grid-template-columns:repeat(2,1fr)}.comp-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.kpi-strip{grid-template-columns:1fr}.kpi{border-right:none;border-bottom:1px solid var(--border)}.kpi:last-child{border-bottom:none}.net-grid,.comp-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hero"><div class="hero-top"><div class="brand"><div class="brand-logo">C</div><div class="brand-text"><h1>Convita – Dashboard de Ventas</h1><span>Evolución de facturación, clientes y redes de distribución</span></div></div><div class="hero-date">Corte: 19 May 2026</div></div></div>
+
+<div class="kpi-strip">
+<div class="kpi"><div class="kpi-label">Ventas 2026 YTD</div><div class="kpi-value green">$11.2M</div><div class="kpi-sub">815 pedidos en 4.6 meses</div></div>
+<div class="kpi"><div class="kpi-label">Proyección Anual 2026</div><div class="kpi-value gold">$27.0M</div><div class="badge green">+36% vs 2025</div></div>
+<div class="kpi"><div class="kpi-label">Ventas 2025 (Cerrado)</div><div class="kpi-value ok">$19.9M</div><div class="kpi-sub">1,841 pedidos · +172% vs 2024</div></div>
+<div class="kpi"><div class="kpi-label">Ticket Promedio 2026</div><div class="kpi-value amber">$13,795</div><div class="badge green">+28% vs 2025 ($10,797)</div></div>
+</div>
+
+<div class="main">
+
+<div class="card full"><div class="card-header"><div class="card-title">Evolución Anual de Facturación</div><span class="card-tag">2023 – 2026 YTD</span></div>
+<div class="comp-grid">
+<div class="comp-card"><div class="comp-label">2023</div><div class="comp-value" style="color:var(--text-sec);">$1.3M</div><div class="comp-sub">557 pedidos · Ticket $2,367</div></div>
+<div class="comp-card"><div class="comp-label">2024</div><div class="comp-value" style="color:var(--amber);">$7.3M</div><div class="comp-sub">1,344 pedidos · +455% vs 2023</div></div>
+<div class="comp-card"><div class="comp-label">2025</div><div class="comp-value" style="color:var(--green);">$19.9M</div><div class="comp-sub">1,841 pedidos · +172% vs 2024</div></div>
+<div class="comp-card"><div class="comp-label">2026 YTD (Ene–May)</div><div class="comp-value" style="color:var(--green-dark);">$11.2M</div><div class="comp-sub">815 pedidos · Proy. $27M anual</div></div>
+</div>
+<div class="note-box green"><strong style="color:var(--green-dark);">Crecimiento sostenido:</strong> Convita multiplicó sus ventas x8 en 3 años ($1.3M → $11.2M en 4.6 meses). El ticket promedio creció x6, de $2,367 a $13,795, indicando clientes cada vez más grandes.</div></div>
+
+<div class="card full"><div class="card-header"><div class="card-title">Tendencia Mensual 2025 – 2026</div><span class="card-tag">Facturación operativa</span></div>
+<div class="bar-chart">
+<div class="bar-group"><div class="bar" style="height:30%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Ene 25: $729K</div></div><div class="bar-amount">$729K</div><div class="bar-label">Ene<br>25</div></div>
+<div class="bar-group"><div class="bar" style="height:43%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Feb 25: $1.05M</div></div><div class="bar-amount">$1.0M</div><div class="bar-label">Feb</div></div>
+<div class="bar-group"><div class="bar" style="height:53%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Mar 25: $1.28M</div></div><div class="bar-amount">$1.3M</div><div class="bar-label">Mar</div></div>
+<div class="bar-group"><div class="bar" style="height:58%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Abr 25: $1.41M</div></div><div class="bar-amount">$1.4M</div><div class="bar-label">Abr</div></div>
+<div class="bar-group"><div class="bar" style="height:62%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">May 25: $1.49M</div></div><div class="bar-amount">$1.5M</div><div class="bar-label">May</div></div>
+<div class="bar-group"><div class="bar" style="height:59%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Jun 25: $1.41M</div></div><div class="bar-amount">$1.4M</div><div class="bar-label">Jun</div></div>
+<div class="bar-group"><div class="bar" style="height:78%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Jul 25: $1.89M</div></div><div class="bar-amount">$1.9M</div><div class="bar-label">Jul</div></div>
+<div class="bar-group"><div class="bar" style="height:77%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Ago 25: $1.87M</div></div><div class="bar-amount">$1.9M</div><div class="bar-label">Ago</div></div>
+<div class="bar-group"><div class="bar" style="height:75%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Sep 25: $1.80M</div></div><div class="bar-amount">$1.8M</div><div class="bar-label">Sep</div></div>
+<div class="bar-group"><div class="bar" style="height:91%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Oct 25: $2.20M</div></div><div class="bar-amount">$2.2M</div><div class="bar-label">Oct</div></div>
+<div class="bar-group"><div class="bar" style="height:97%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Nov 25: $2.35M</div></div><div class="bar-amount">$2.4M</div><div class="bar-label">Nov</div></div>
+<div class="bar-group"><div class="bar" style="height:100%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Dic 25: $2.41M</div></div><div class="bar-amount">$2.4M</div><div class="bar-label">Dic</div></div>
+<div class="bar-group" style="border-left:2px dashed var(--border);padding-left:6px"><div class="bar" style="height:75%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">Ene 26: $1.80M</div></div><div class="bar-amount">$1.8M</div><div class="bar-label">Ene<br>26</div></div>
+<div class="bar-group"><div class="bar" style="height:98%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">Feb 26: $2.37M</div></div><div class="bar-amount">$2.4M</div><div class="bar-label">Feb</div></div>
+<div class="bar-group"><div class="bar" style="height:106%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">Mar 26: $2.56M</div></div><div class="bar-amount">$2.6M</div><div class="bar-label">Mar</div></div>
+<div class="bar-group"><div class="bar" style="height:110%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">Abr 26: $2.67M</div></div><div class="bar-amount">$2.7M</div><div class="bar-label">Abr</div></div>
+<div class="bar-group"><div class="bar" style="height:76%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">May 26*: $1.84M (parcial)</div></div><div class="bar-amount">$1.8M*</div><div class="bar-label">May*</div></div>
+</div>
+<div class="note-box green"><strong style="color:var(--green-dark);">2026 vs 2025 (mismos meses):</strong> Ene +147%, Feb +126%, Mar +101%, Abr +90%. Mayo parcial (19 días) ya supera el mismo periodo de 2025. El Q1 2026 ($6.2M) superó al Q2 2025 completo ($4.3M).</div></div>
+
+<div class="card full"><div class="card-header"><div class="card-title">Top 15 Clientes – 2026 YTD</div><span class="card-tag">Excluye Casa &amp; Dispensa</span></div>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Cliente</th><th>Pedidos</th><th>Ticket Prom.</th><th>Ventas 2026</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><strong>5 Estrellas</strong></td><td>17</td><td>$75,221</td><td class="amount-val">$1,278,750</td></tr>
+<tr><td>2</td><td><strong>Crufi</strong></td><td>6</td><td>$159,128</td><td class="amount-val">$954,766</td></tr>
+<tr><td>3</td><td><strong>La Spezia</strong></td><td>14</td><td>$65,324</td><td class="amount-val">$914,540</td></tr>
+<tr><td>4</td><td><strong>5 Océanos – Berro</strong></td><td>14</td><td>$33,338</td><td class="amount-val">$466,734</td></tr>
+<tr><td>5</td><td><strong>La Casa de los Congelados</strong></td><td>13</td><td>$29,733</td><td class="amount-val">$386,530</td></tr>
+<tr><td>6</td><td><strong>La Molienda Arocena</strong></td><td>24</td><td>$15,426</td><td class="amount-val">$370,221</td></tr>
+<tr><td>7</td><td><strong>Macromercado Carrasco</strong></td><td>24</td><td>$12,743</td><td class="amount-val">$305,822</td></tr>
+<tr><td>8</td><td><strong>Distribuidor Rijo – Lavalleja</strong></td><td>3</td><td>$92,913</td><td class="amount-val">$278,738</td></tr>
+<tr><td>9</td><td><strong>Macromercado Maldonado</strong></td><td>21</td><td>$11,912</td><td class="amount-val">$250,157</td></tr>
+<tr><td>10</td><td><strong>Macromercado San Martín</strong></td><td>22</td><td>$11,131</td><td class="amount-val">$244,878</td></tr>
+<tr><td>11</td><td><strong>La Molienda Punta Carretas</strong></td><td>23</td><td>$10,327</td><td class="amount-val">$237,518</td></tr>
+<tr><td>12</td><td><strong>Dalbertt</strong></td><td>29</td><td>$7,915</td><td class="amount-val">$229,525</td></tr>
+<tr><td>13</td><td><strong>Minimarket La Isla</strong></td><td>19</td><td>$11,999</td><td class="amount-val">$227,976</td></tr>
+<tr><td>14</td><td><strong>Supermercado El Depósito</strong></td><td>6</td><td>$37,138</td><td class="amount-val">$222,825</td></tr>
+<tr><td>15</td><td><strong>Supersol</strong></td><td>6</td><td>$35,871</td><td class="amount-val">$215,224</td></tr>
+</tbody></table></div>
+<div class="note-box gold"><strong style="color:#8D6E1F;">Cambios clave vs 2025:</strong> 5 Estrellas subió al #1 ($1.28M). Crufi mantiene tickets enormes ($159K prom). Aparecen clientes nuevos: Rijo Lavalleja ($279K), Minimarket La Isla ($228K) y El Depósito ($223K). La Spezia bajó del #1 al #3 pero sigue fuerte ($915K).</div></div>
+
+<div class="card full"><div class="card-header"><div class="card-title">Redes de Sucursales – Ventas Históricas</div><span class="card-tag">Acumulado total</span></div>
+<div class="net-section"><div class="net-header"><div class="net-title">La Molienda (7 sucursales)</div><div class="net-total">Total: <strong>$4,289,338</strong> · 511 pedidos</div></div>
+<div class="net-grid">
+<div class="net-card"><div class="net-name">Arocena</div><div class="ns"><span>Ventas</span><strong>$754,745</strong></div><div class="ns"><span>Pedidos</span><strong>61</strong></div></div>
+<div class="net-card"><div class="net-name">Costa Urbana</div><div class="ns"><span>Ventas</span><strong>$754,084</strong></div><div class="ns"><span>Pedidos</span><strong>79</strong></div></div>
+<div class="net-card"><div class="net-name">Punta Carretas</div><div class="ns"><span>Ventas</span><strong>$742,899</strong></div><div class="ns"><span>Pedidos</span><strong>93</strong></div></div>
+<div class="net-card"><div class="net-name">ACJ</div><div class="ns"><span>Ventas</span><strong>$631,664</strong></div><div class="ns"><span>Pedidos</span><strong>59</strong></div></div>
+<div class="net-card"><div class="net-name">Convención</div><div class="ns"><span>Ventas</span><strong>$566,816</strong></div><div class="ns"><span>Pedidos</span><strong>70</strong></div></div>
+<div class="net-card"><div class="net-name">Ciudad Vieja</div><div class="ns"><span>Ventas</span><strong>$508,572</strong></div><div class="ns"><span>Pedidos</span><strong>80</strong></div></div>
+<div class="net-card"><div class="net-name">Ejido</div><div class="ns"><span>Ventas</span><strong>$329,477</strong></div><div class="ns"><span>Pedidos</span><strong>66</strong></div></div>
+</div></div>
+<div class="net-section"><div class="net-header"><div class="net-title">Macromercado (4 sucursales)</div><div class="net-total">Total: <strong>$3,197,445</strong> · 275 pedidos</div></div>
+<div class="net-grid">
+<div class="net-card"><div class="net-name">San Martín</div><div class="ns"><span>Ventas</span><strong>$1,039,642</strong></div><div class="ns"><span>Pedidos</span><strong>91</strong></div></div>
+<div class="net-card"><div class="net-name">Carrasco</div><div class="ns"><span>Ventas</span><strong>$1,023,828</strong></div><div class="ns"><span>Pedidos</span><strong>89</strong></div></div>
+<div class="net-card"><div class="net-name">Maldonado</div><div class="ns"><span>Ventas</span><strong>$814,990</strong></div><div class="ns"><span>Pedidos</span><strong>70</strong></div></div>
+<div class="net-card"><div class="net-name">Las Piedras</div><div class="ns"><span>Ventas</span><strong>$318,986</strong></div><div class="ns"><span>Pedidos</span><strong>25</strong></div></div>
+</div></div>
+<div class="net-section"><div class="net-header"><div class="net-title">Portisur (4 principales)</div><div class="net-total">Total: <strong>$1,477,207</strong> · 87 pedidos</div></div>
+<div class="net-grid">
+<div class="net-card"><div class="net-name">Av. Italia</div><div class="ns"><span>Ventas</span><strong>$585,878</strong></div><div class="ns"><span>Pedidos</span><strong>28</strong></div></div>
+<div class="net-card"><div class="net-name">Av. Brasil</div><div class="ns"><span>Ventas</span><strong>$289,653</strong></div><div class="ns"><span>Pedidos</span><strong>14</strong></div></div>
+<div class="net-card"><div class="net-name">Orinoco</div><div class="ns"><span>Ventas</span><strong>$179,936</strong></div><div class="ns"><span>Pedidos</span><strong>11</strong></div></div>
+<div class="net-card"><div class="net-name">Rivera</div><div class="ns"><span>Ventas</span><strong>$135,197</strong></div><div class="ns"><span>Pedidos</span><strong>13</strong></div></div>
+</div></div>
+<div class="note-box green"><strong style="color:var(--green-dark);">Total redes:</strong> Las 3 cadenas suman $8.96M (23% de la facturación histórica). La Molienda es la más diversificada, Macromercado la más concentrada, y Portisur creció fuerte en 2026.</div></div>
+
+<!-- RIVERO -->
+<div class="card full"><div class="card-header"><div class="card-title">Marcelo Rivero – Análisis Comercial</div><span class="card-tag">Vendedor principal</span></div>
+<div class="comp-grid">
+<div class="comp-card"><div class="comp-label">Ventas 2026 YTD</div><div class="comp-value" style="color:var(--green-dark);">$5.01M</div><div class="comp-sub">458 pedidos · 48% de la facturación total</div></div>
+<div class="comp-card"><div class="comp-label">CxC de sus clientes</div><div class="comp-value" style="color:var(--amber);">$3.49M</div><div class="comp-sub">60% del CxC operativo total ($5.85M)</div></div>
+<div class="comp-card"><div class="comp-label">CxC Vencido</div><div class="comp-value" style="color:var(--red);">$1.81M</div><div class="comp-sub">51.8% de su CxC está vencido</div></div>
+<div class="comp-card"><div class="comp-label">Evolución</div><div class="comp-value" style="color:var(--green);">x2.6</div><div class="comp-sub">$1.9M (2024) → $7.7M (2025) → $5.0M YTD</div></div>
+</div>
+<div style="margin-top:24px;"><div style="font-weight:700;font-size:14px;color:var(--green-dark);margin-bottom:12px;">Clientes de Rivero – Ventas vs Cobranzas</div>
+<div class="table-wrap"><table>
+<thead><tr><th>Estado</th><th>Cliente</th><th>Ventas 2026</th><th>CxC Pendiente</th><th>Vencido</th><th>Máx. Días</th></tr></thead>
+<tbody>
+<tr><td><span class="risk-dot med"></span></td><td><strong>5 Océanos – Berro</strong></td><td class="amount-val">$466,734</td><td>$389,844</td><td class="amount-val amber">$237,359 (61%)</td><td>58 días</td></tr>
+<tr><td><span class="risk-dot med"></span></td><td><strong>La Casa de los Congelados</strong></td><td class="amount-val">$386,530</td><td>$316,596</td><td class="amount-val amber">$171,698 (54%)</td><td>51 días</td></tr>
+<tr><td><span class="risk-dot med"></span></td><td><strong>La Molienda Arocena</strong></td><td class="amount-val">$370,221</td><td>$287,186</td><td class="amount-val amber">$137,453 (48%)</td><td>54 días</td></tr>
+<tr><td><span class="risk-dot high"></span></td><td><strong>Macromercado Carrasco</strong></td><td class="amount-val">$305,822</td><td>$166,702</td><td class="amount-val red">$79,979 (48%)</td><td>173 días</td></tr>
+<tr><td><span class="risk-dot high"></span></td><td><strong>Macromercado Maldonado</strong></td><td class="amount-val">$250,157</td><td>$97,356</td><td class="amount-val red">$33,054 (34%)</td><td>262 días</td></tr>
+<tr><td><span class="risk-dot high"></span></td><td><strong>Macromercado San Martín</strong></td><td class="amount-val">$244,878</td><td>$138,635</td><td class="amount-val red">$66,167 (48%)</td><td>467 días*</td></tr>
+<tr><td><span class="risk-dot med"></span></td><td><strong>La Molienda Punta Carretas</strong></td><td class="amount-val">$237,518</td><td>$193,146</td><td class="amount-val amber">$89,752 (46%)</td><td>54 días</td></tr>
+<tr><td><span class="risk-dot ok"></span></td><td><strong>Dalbertt</strong></td><td class="amount-val">$229,525</td><td>$47,608</td><td>$0 (0%)</td><td>Al día</td></tr>
+<tr><td><span class="risk-dot low"></span></td><td><strong>Minimarket La Isla</strong></td><td class="amount-val">$227,976</td><td>$80,210</td><td>$22,939 (29%)</td><td>12 días</td></tr>
+<tr><td><span class="risk-dot med"></span></td><td><strong>Supersol</strong></td><td class="amount-val">$215,224</td><td>$174,468</td><td class="amount-val amber">$81,396 (47%)</td><td>58 días</td></tr>
+<tr><td><span class="risk-dot med"></span></td><td><strong>Portisur Av. Brasil</strong></td><td class="amount-val">$209,508</td><td>$185,500</td><td class="amount-val amber">$144,825 (78%)</td><td>40 días</td></tr>
+<tr><td><span class="risk-dot low"></span></td><td><strong>La Molienda Costa Urbana</strong></td><td class="amount-val">$199,613</td><td>$87,239</td><td>$17,762 (20%)</td><td>12 días</td></tr>
+<tr><td><span class="risk-dot med"></span></td><td><strong>Portisur Av. Italia</strong></td><td class="amount-val">$195,962</td><td>$183,581</td><td class="amount-val amber">$151,526 (83%)</td><td>58 días</td></tr>
+<tr><td><span class="risk-dot low"></span></td><td><strong>Macromercado Las Piedras</strong></td><td class="amount-val">$183,857</td><td>$87,416</td><td>$46,516 (53%)</td><td>26 días</td></tr>
+<tr><td><span class="risk-dot high"></span></td><td><strong>La Molienda ACJ</strong></td><td class="amount-val">$183,524</td><td>$136,914</td><td class="amount-val red">$58,249 (43%)</td><td>431 días*</td></tr>
+</tbody></table></div></div>
+<div class="note-box gold"><strong style="color:#8D6E1F;">Diagnóstico:</strong> Rivero genera el 48% de las ventas pero administra el 60% del CxC, con un 51.8% vencido (por encima del promedio de 48.5%). Sus cuentas más problemáticas son Portisur Av. Italia (83% vencido), Portisur Av. Brasil (78%) y 5 Océanos (61%). Dalbertt, La Isla y Costa Urbana son las cuentas sanas. Incorporar a Rivero activamente en el proceso de cobranzas de sus clientes es clave: él tiene la relación comercial y puede presionar el cobro sin perder el vínculo.</div></div>
+
+<!-- Clientes -->
+<div class="card"><div class="card-header"><div class="card-title">Clientes Únicos por Año</div><span class="card-tag">Evolución</span></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;text-align:center;">
+<div style="padding:16px;border-radius:10px;background:#F8FAF8;border:1px solid var(--border);"><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">2023</div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text-sec);">316</div></div>
+<div style="padding:16px;border-radius:10px;background:#F8FAF8;border:1px solid var(--border);"><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">2024</div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--amber);">359</div></div>
+<div style="padding:16px;border-radius:10px;background:#F8FAF8;border:1px solid var(--border);"><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">2025</div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green);">350</div></div>
+<div style="padding:16px;border-radius:10px;background:var(--green-muted);border:1px solid #C8E6C9;"><div style="font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">2026 YTD</div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green-dark);">171</div></div>
+</div>
+<div class="note-box green" style="margin-top:16px;"><strong style="color:var(--green-dark);">2026:</strong> 113 retenidos de 2025, 58 nuevos. Ritmo de ~11 clientes nuevos/mes.</div></div>
+
+<!-- Frecuencia -->
+<div class="card"><div class="card-header"><div class="card-title">Frecuencia de Compra 2026</div><span class="card-tag">171 clientes activos</span></div>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+<div style="padding:14px;border-radius:10px;background:#F8FAF8;border:1px solid var(--border);"><div style="font-weight:700;font-size:22px;color:var(--green-dark);">76</div><div style="font-size:12px;color:var(--text-sec);">1 compra (44%)</div></div>
+<div style="padding:14px;border-radius:10px;background:#F8FAF8;border:1px solid var(--border);"><div style="font-weight:700;font-size:22px;color:var(--amber);">56</div><div style="font-size:12px;color:var(--text-sec);">2–5 compras (33%)</div></div>
+<div style="padding:14px;border-radius:10px;background:#F8FAF8;border:1px solid var(--border);"><div style="font-weight:700;font-size:22px;color:var(--green);">17</div><div style="font-size:12px;color:var(--text-sec);">6–12 compras (10%)</div></div>
+<div style="padding:14px;border-radius:10px;background:var(--green-muted);border:1px solid #C8E6C9;"><div style="font-weight:700;font-size:22px;color:var(--green-dark);">22</div><div style="font-size:12px;color:var(--text-sec);">13+ compras (13%) ← core</div></div>
+</div>
+<div class="note-box gold" style="margin-top:16px;"><strong style="color:#8D6E1F;">El 13% de los clientes (22) genera la mayoría de los pedidos.</strong> Oportunidad: mover a los 56 clientes de 2–5 compras al tier de recurrentes.</div></div>
+
+<!-- YoY -->
+<div class="card full"><div class="card-header"><div class="card-title">2026 vs 2025 – Mismos Meses (Ene–Abr)</div><span class="card-tag">Crecimiento interanual</span></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+<div style="padding:18px;border-radius:12px;background:var(--green-muted);border:1px solid #C8E6C9;text-align:center;"><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Enero</div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green-dark);">+147%</div><div style="font-size:11px;color:var(--text-sec);margin-top:4px;">$729K → $1.80M</div></div>
+<div style="padding:18px;border-radius:12px;background:var(--green-muted);border:1px solid #C8E6C9;text-align:center;"><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Febrero</div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green-dark);">+126%</div><div style="font-size:11px;color:var(--text-sec);margin-top:4px;">$1.05M → $2.37M</div></div>
+<div style="padding:18px;border-radius:12px;background:var(--green-muted);border:1px solid #C8E6C9;text-align:center;"><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Marzo</div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green-dark);">+101%</div><div style="font-size:11px;color:var(--text-sec);margin-top:4px;">$1.28M → $2.56M</div></div>
+<div style="padding:18px;border-radius:12px;background:var(--green-muted);border:1px solid #C8E6C9;text-align:center;"><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Abril</div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green-dark);">+90%</div><div style="font-size:11px;color:var(--text-sec);margin-top:4px;">$1.41M → $2.67M</div></div>
+</div>
+<div class="note-box green"><strong style="color:var(--green-dark);">Cada mes de 2026 al menos duplica su equivalente 2025.</strong> El crecimiento se desacelera (de +147% a +90%) pero es normal: la base comparable es cada vez más alta.</div></div>
+
+<!-- Conclusión -->
+<div class="card full" style="border:2px solid var(--green);background:linear-gradient(135deg,#F1F8F3,#FFF);"><div class="card-header"><div class="card-title" style="font-size:22px;">Conclusión</div></div>
+<div style="font-size:14px;line-height:1.7;color:var(--text-sec);">
+<p>Convita proyecta <strong style="color:var(--green-dark);">$27M para 2026</strong>, un +36% vs los $19.9M de 2025. El crecimiento es impulsado por el aumento del ticket promedio (+28%) y la incorporación de clientes de alto volumen (5 Estrellas, Crufi, Rijo).</p>
+<p style="margin-top:12px;">Marcelo Rivero genera el 48% de las ventas con 48 clientes activos, pero su cartera concentra el 60% del CxC con un 51.8% vencido. <strong style="color:var(--red);">Portisur Av. Italia (83% vencido) y Av. Brasil (78%)</strong> son los focos más críticos. Incorporarlo al proceso de cobranzas — no solo como vendedor sino como gestor de cobro de sus propias cuentas — es la palanca más directa para mejorar el ratio de mora.</p>
+<p style="margin-top:12px;">La base de <strong style="color:var(--green-dark);">171 clientes activos</strong> está bien diversificada y aparecen clientes nuevos relevantes cada mes (~11/mes). El desafío: que las cobranzas acompañen el ritmo de crecimiento de ventas.</p>
+</div></div>
+
+</div>
+
+<div class="footer"><strong>Convita</strong> – Integro SAS · General Pagola 1765, Montevideo, Uruguay · <a href="https://www.convita.com.uy">convita.com.uy</a> · Dashboard de Ventas – Mayo 2026</div>
+</body>
+</html>
