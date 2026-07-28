@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convita &ndash; Dashboard de Ventas &middot; Julio 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1B5E3B;--green-light:#2E7D52;--green-dark:#0D3D24;--green-muted:#E8F5E9;--cream:#FAFAF5;--gold:#C8A951;--text:#1A1A1A;--text-sec:#5A6B5E;--border:#D4E0D8;--card:#FFF;--red:#D32F2F;--red-lt:#FFEBEE;--amber:#E6A200;--amber-lt:#FFF8E1;--ok:#2E7D52;--ok-lt:#E8F5E9;--sh-sm:0 1px 3px rgba(27,94,59,.06);--sh-md:0 4px 16px rgba(27,94,59,.08);--sh-lg:0 8px 32px rgba(27,94,59,.12);--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden}
+.hero{background:linear-gradient(135deg,var(--green-dark) 0%,var(--green) 40%,var(--green-light) 100%);padding:46px 56px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(200,169,81,.15) 0%,transparent 70%);border-radius:50%}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{width:48px;height:48px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.brand-text h1{font-family:'Playfair Display',serif;font-size:27px;font-weight:600;color:#fff;letter-spacing:-.5px}
+.brand-text span{font-size:13px;color:rgba(255,255,255,.75);font-weight:300}
+.hero-date{color:rgba(255,255,255,.85);font-size:13px;background:rgba(255,255,255,.12);padding:8px 16px;border-radius:100px;border:1px solid rgba(255,255,255,.18)}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);margin:-28px 40px 0;position:relative;z-index:2;background:var(--card);border-radius:var(--radius);box-shadow:var(--sh-lg);overflow:hidden}
+.kpi{padding:26px 28px;border-right:1px solid var(--border)}.kpi:last-child{border-right:none}
+.kpi-label{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-sec);font-weight:500;margin-bottom:8px}
+.kpi-value{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;line-height:1.1}
+.kpi-value.green{color:var(--green)}.kpi-value.gold{color:var(--gold)}.kpi-value.ok{color:var(--ok)}.kpi-value.amber{color:var(--amber)}
+.kpi-sub{font-size:12px;color:var(--text-sec);margin-top:5px}
+.badge{display:inline-flex;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-top:5px}
+.badge.green{background:var(--ok-lt);color:var(--ok)}.badge.gold{background:#FFF8E1;color:#8D6E1F}.badge.red{background:var(--red-lt);color:var(--red)}
+.main{padding:36px 40px 56px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--sh-sm);padding:28px 32px;border:1px solid var(--border);transition:box-shadow .3s}
+.card:hover{box-shadow:var(--sh-md)}.card.full{grid-column:1/-1}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+.card-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--green-dark)}
+.card-tag{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);background:var(--green-muted);padding:4px 12px;border-radius:100px;font-weight:500}
+.bar-chart{display:flex;align-items:flex-end;gap:5px;height:200px;padding-top:10px}
+.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:6px 6px 2px 2px;min-height:3px;position:relative;cursor:default;transition:opacity .3s}
+.bar:hover{opacity:.82}
+.bar .tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--green-dark);color:#fff;padding:4px 10px;border-radius:6px;font-size:10px;white-space:nowrap;z-index:10}
+.bar:hover .tip{display:block}
+.bar-label{font-size:8px;color:var(--text-sec);font-weight:500;text-align:center;line-height:1.2}
+.bar-amount{font-size:8px;font-weight:700;color:var(--text)}
+.bar.record{border:2px solid var(--gold);box-shadow:0 0 12px rgba(200,169,81,.35)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:10px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);font-weight:600;border-bottom:2px solid var(--green)}
+thead th:nth-child(n+3),tbody td:nth-child(n+3){text-align:right}
+tbody tr{border-bottom:1px solid #F0F4F1}tbody tr:hover{background:#F8FAF8}
+tbody td{padding:10px 12px}
+.val{font-weight:600;font-variant-numeric:tabular-nums}
+.val.red{color:var(--red)}.val.amber{color:var(--amber)}.val.ok{color:var(--green)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}
+.dot.high{background:var(--red)}.dot.med{background:var(--amber)}.dot.low{background:var(--ok)}.dot.ok{background:#B0BEB5}
+.net-section{margin-bottom:22px}.net-section:last-child{margin-bottom:0}
+.net-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--green-muted)}
+.net-title{font-weight:700;font-size:14px;color:var(--green-dark)}
+.net-total{font-size:12px;color:var(--text-sec)}.net-total strong{color:var(--green)}
+.net-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.net-card{background:linear-gradient(135deg,#F8FAF8,#FFF);border:1px solid var(--border);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden;transition:transform .2s}
+.net-card:hover{transform:translateY(-2px)}
+.net-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:var(--green)}
+.net-name{font-weight:600;font-size:12px;margin-bottom:6px}
+.ns{display:flex;justify-content:space-between;font-size:11px;color:var(--text-sec);margin-bottom:2px}.ns strong{color:var(--text)}
+.comp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.comp-card{padding:20px;border-radius:12px;background:linear-gradient(135deg,#F8FAF8,#FFF);border:1px solid var(--border);text-align:center}
+.comp-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);margin-bottom:6px;font-weight:500}
+.comp-value{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1.1}
+.comp-sub{font-size:11.5px;color:var(--text-sec);margin-top:4px}
+.note{padding:13px 16px;border-radius:10px;font-size:12.5px;color:var(--text-sec);line-height:1.55;margin-top:16px}
+.note.green{background:#F1F8F3;border:1px solid #C8E6C9}
+.note.gold{background:#FFF8E1;border:1px solid #F5E0BC}
+.note.red{background:var(--red-lt);border:1px solid #FFCDD2}
+.mini{padding:18px;border-radius:12px;border:1px solid var(--border);background:linear-gradient(135deg,#F8FAF8,#FFF);text-align:center}
+.mini-l{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-sec);margin-bottom:6px;font-weight:500}
+.mini-v{font-family:'Playfair Display',serif;font-size:23px;font-weight:700;line-height:1.1}
+.mini-s{font-size:11px;color:var(--text-sec);margin-top:4px}
+.footer{text-align:center;padding:24px 40px 36px;font-size:12px;color:var(--text-sec);border-top:1px solid var(--border);margin:0 40px}
+.footer a{color:var(--green);text-decoration:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.kpi-strip,.card{animation:fadeUp .55s ease both}
+.card:nth-child(1){animation-delay:.06s}.card:nth-child(2){animation-delay:.12s}.card:nth-child(3){animation-delay:.18s}
+.card:nth-child(4){animation-delay:.24s}.card:nth-child(5){animation-delay:.3s}.card:nth-child(6){animation-delay:.36s}
+.card:nth-child(7){animation-delay:.42s}.card:nth-child(8){animation-delay:.48s}.card:nth-child(9){animation-delay:.54s}
+@media(max-width:1100px){.main{grid-template-columns:1fr}.card.full{grid-column:1}.kpi-strip{grid-template-columns:repeat(2,1fr);margin:-28px 20px 0}.kpi:nth-child(2){border-right:none}.hero{padding:34px 22px 32px}.main{padding:28px 20px 44px}.net-grid{grid-template-columns:repeat(2,1fr)}.comp-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.kpi-strip{grid-template-columns:1fr}.kpi{border-right:none;border-bottom:1px solid var(--border)}.net-grid,.comp-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="brand">
+      <div class="brand-logo">C</div>
+      <div class="brand-text">
+        <h1>Convita &ndash; Dashboard de Ventas</h1>
+        <span>Facturaci&#243;n, clientes y redes de distribuci&#243;n</span>
+      </div>
+    </div>
+    <div class="hero-date">Corte: 27 Jul 2026</div>
+  </div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-label">Facturado 2026 YTD</div><div class="kpi-value green">$17.5M</div><div class="kpi-sub">1,206 facturas &middot; Ene&ndash;27 Jul</div></div>
+  <div class="kpi"><div class="kpi-label">Proyecci&#243;n Anual 2026</div><div class="kpi-value gold">$30.6M</div><div class="badge green">+56% vs 2025</div></div>
+  <div class="kpi"><div class="kpi-label">Facturado 2025 (Cerrado)</div><div class="kpi-value ok">$19.6M</div><div class="kpi-sub">1,791 facturas &middot; +164% vs 2024</div></div>
+  <div class="kpi"><div class="kpi-label">Ticket Promedio 2026</div><div class="kpi-value amber">$14,523</div><div class="badge green">+32% vs 2025 ($10,972)</div></div>
+</div>
+
+<div class="main">
+
+  <!-- Evolucion anual -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Evoluci&#243;n Anual de Facturaci&#243;n</div><span class="card-tag">2023 &ndash; 2026 YTD</span></div>
+    <div class="comp-grid">
+      <div class="comp-card"><div class="comp-label">2023</div><div class="comp-value" style="color:var(--text-sec);">$1.33M</div><div class="comp-sub">579 fact. &middot; Ticket $2,375</div></div>
+      <div class="comp-card"><div class="comp-label">2024</div><div class="comp-value" style="color:var(--amber);">$7.44M</div><div class="comp-sub">1,352 fact. &middot; +458% vs 2023</div></div>
+      <div class="comp-card"><div class="comp-label">2025</div><div class="comp-value" style="color:var(--green);">$19.61M</div><div class="comp-sub">1,791 fact. &middot; +164% vs 2024</div></div>
+      <div class="comp-card"><div class="comp-label">2026 YTD (a 27 jul)</div><div class="comp-value" style="color:var(--green-dark);">$17.52M</div><div class="comp-sub">1,206 fact. &middot; Proy. $30.6M</div></div>
+    </div>
+    <div class="note green"><strong style="color:var(--green-dark);">En siete meses Convita ya factur&#243; el 89% de todo 2025.</strong> El ticket promedio subi&#243; de $2,375 a $14,523 en tres a&#241;os: no es solo que hay m&#225;s clientes, es que cada orden vale seis veces m&#225;s. Ese es el efecto de haber pasado de venta directa a puntos de venta y marca blanca.</div>
+  </div>
+
+  <!-- Tendencia mensual -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Tendencia Mensual 2025 &ndash; 2026</div><span class="card-tag">&#9733; Junio 2026: r&#233;cord hist&#243;rico</span></div>
+    <div class="bar-chart">
+      <div class="bar-group"><div class="bar" style="height:23%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Ene 25: $736K</div></div><div class="bar-amount">$736K</div><div class="bar-label">Ene<br>25</div></div>
+      <div class="bar-group"><div class="bar" style="height:32%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Feb 25: $1.03M</div></div><div class="bar-amount">$1.0M</div><div class="bar-label">Feb</div></div>
+      <div class="bar-group"><div class="bar" style="height:40%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Mar 25: $1.26M</div></div><div class="bar-amount">$1.3M</div><div class="bar-label">Mar</div></div>
+      <div class="bar-group"><div class="bar" style="height:41%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Abr 25: $1.30M</div></div><div class="bar-amount">$1.3M</div><div class="bar-label">Abr</div></div>
+      <div class="bar-group"><div class="bar" style="height:50%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">May 25: $1.58M</div></div><div class="bar-amount">$1.6M</div><div class="bar-label">May</div></div>
+      <div class="bar-group"><div class="bar" style="height:43%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Jun 25: $1.37M</div></div><div class="bar-amount">$1.4M</div><div class="bar-label">Jun</div></div>
+      <div class="bar-group"><div class="bar" style="height:60%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Jul 25: $1.90M</div></div><div class="bar-amount">$1.9M</div><div class="bar-label">Jul</div></div>
+      <div class="bar-group"><div class="bar" style="height:59%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Ago 25: $1.88M</div></div><div class="bar-amount">$1.9M</div><div class="bar-label">Ago</div></div>
+      <div class="bar-group"><div class="bar" style="height:56%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Sep 25: $1.78M</div></div><div class="bar-amount">$1.8M</div><div class="bar-label">Sep</div></div>
+      <div class="bar-group"><div class="bar" style="height:67%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Oct 25: $2.14M</div></div><div class="bar-amount">$2.1M</div><div class="bar-label">Oct</div></div>
+      <div class="bar-group"><div class="bar" style="height:70%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Nov 25: $2.22M</div></div><div class="bar-amount">$2.2M</div><div class="bar-label">Nov</div></div>
+      <div class="bar-group"><div class="bar" style="height:76%;background:linear-gradient(180deg,#A5D6A7,var(--ok));"><div class="tip">Dic 25: $2.41M</div></div><div class="bar-amount">$2.4M</div><div class="bar-label">Dic</div></div>
+      <div class="bar-group" style="border-left:2px dashed var(--border);padding-left:4px"><div class="bar" style="height:57%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">Ene 26: $1.82M</div></div><div class="bar-amount">$1.8M</div><div class="bar-label">Ene<br>26</div></div>
+      <div class="bar-group"><div class="bar" style="height:75%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">Feb 26: $2.37M</div></div><div class="bar-amount">$2.4M</div><div class="bar-label">Feb</div></div>
+      <div class="bar-group"><div class="bar" style="height:82%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">Mar 26: $2.59M</div></div><div class="bar-amount">$2.6M</div><div class="bar-label">Mar</div></div>
+      <div class="bar-group"><div class="bar" style="height:84%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">Abr 26: $2.67M</div></div><div class="bar-amount">$2.7M</div><div class="bar-label">Abr</div></div>
+      <div class="bar-group"><div class="bar" style="height:79%;background:linear-gradient(180deg,var(--gold),#A68B3A);"><div class="tip">May 26: $2.49M</div></div><div class="bar-amount">$2.5M</div><div class="bar-label">May</div></div>
+      <div class="bar-group"><div class="bar record" style="height:100%;background:linear-gradient(180deg,#FFD54F,var(--gold));"><div class="tip">&#9733; Jun 26: $3.17M &ndash; R&#201;CORD</div></div><div class="bar-amount" style="color:#8D6E1F;">$3.2M&#9733;</div><div class="bar-label">Jun<br>&#9733;</div></div>
+      <div class="bar-group"><div class="bar" style="height:76%;background:linear-gradient(180deg,#E0C874,#B9A055);"><div class="tip">Jul 26 (1&ndash;27, parcial): $2.41M</div></div><div class="bar-amount">$2.4M*</div><div class="bar-label">Jul*</div></div>
+    </div>
+    <div class="note gold"><strong style="color:#8D6E1F;">Junio 2026 es el mes r&#233;cord con $3.17M</strong>, un 32% por encima de diciembre 2025. Julio, con 27 de 31 d&#237;as facturados, ya lleva $2.41M y proyecta cerrar cerca de $2.8M &mdash; ser&#237;a su cuarto mes consecutivo arriba de los $2.4M. La ca&#237;da estacional de invierno que s&#237; se not&#243; en 2025 este a&#241;o no aparece.</div>
+  </div>
+
+  <!-- YoY -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Crecimiento Interanual 2026 vs 2025</div><span class="card-tag">Ene &ndash; Jul</span></div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;">
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Enero</div><div class="mini-v" style="color:var(--green-dark);">+147%</div><div class="mini-s">$736K&#8594;$1.82M</div></div>
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Febrero</div><div class="mini-v" style="color:var(--green-dark);">+131%</div><div class="mini-s">$1.03M&#8594;$2.37M</div></div>
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Marzo</div><div class="mini-v" style="color:var(--green-dark);">+106%</div><div class="mini-s">$1.26M&#8594;$2.59M</div></div>
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Abril</div><div class="mini-v" style="color:var(--green-dark);">+105%</div><div class="mini-s">$1.30M&#8594;$2.67M</div></div>
+      <div class="mini" style="background:var(--amber-lt);border-color:#F5E0BC;"><div class="mini-l">Mayo</div><div class="mini-v" style="color:var(--amber);">+58%</div><div class="mini-s">$1.58M&#8594;$2.49M</div></div>
+      <div class="mini" style="background:#FFF8E1;border:2px solid var(--gold);"><div class="mini-l">Junio &#9733;</div><div class="mini-v" style="color:var(--gold);">+131%</div><div class="mini-s">$1.37M&#8594;$3.17M</div></div>
+      <div class="mini" style="background:#F8FAF8;"><div class="mini-l">Julio*</div><div class="mini-v" style="color:var(--text-sec);">+27%</div><div class="mini-s">parcial a 27 d&#237;as</div></div>
+    </div>
+    <div class="note green"><strong style="color:var(--green-dark);">Acumulado Ene&ndash;Jul: $17.52M contra $9.17M en 2025, un +91%.</strong> El porcentaje mensual se modera a medida que la base de comparaci&#243;n sube, pero en pesos cada mes de 2026 suma m&#225;s que su equivalente del a&#241;o pasado. El Q2 2026 ($8.33M) super&#243; al Q4 2025 ($6.77M), que hab&#237;a sido el mejor trimestre hist&#243;rico.</div>
+  </div>
+
+  <!-- Top 16 -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Top 15 Clientes &ndash; 2026 YTD</div><span class="card-tag">Cadenas agrupadas por grupo econ&#243;mico</span></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>#</th><th>Cliente / Grupo</th><th>Fact.</th><th>Ticket</th><th>Ene&ndash;Jul 2025</th><th>2026 YTD</th><th>Var.</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><strong>La Molienda</strong> <span style="font-size:10px;color:var(--text-sec);">7 sucursales</span></td><td class="val">215</td><td class="val">$8,546</td><td class="val">$977,613</td><td class="val">$1,837,420</td><td class="val ok">+88%</td></tr>
+          <tr><td>2</td><td><strong>5 Estrellas</strong></td><td class="val">21</td><td class="val">$78,336</td><td class="val">&mdash;</td><td class="val">$1,645,050</td><td><span class="badge green">Nuevo 2026</span></td></tr>
+          <tr><td>3</td><td><strong>La Spezia</strong></td><td class="val">23</td><td class="val">$64,213</td><td class="val">$1,815,770</td><td class="val">$1,476,904</td><td class="val red">&minus;19%</td></tr>
+          <tr><td>4</td><td><strong>Crufi</strong></td><td class="val">9</td><td class="val">$159,128</td><td class="val">$1,829,664</td><td class="val">$1,432,149</td><td class="val red">&minus;22%</td></tr>
+          <tr style="background:#F8FAF8;"><td>5</td><td><strong>Casa &amp; Dispensa</strong></td><td class="val">62</td><td class="val">$22,906</td><td class="val">$111,972</td><td class="val">$1,420,151</td><td class="val ok">+1,168%</td></tr>
+          <tr><td>6</td><td><strong>Macromercado</strong> <span style="font-size:10px;color:var(--text-sec);">4 sucursales</span></td><td class="val">121</td><td class="val">$11,424</td><td class="val">$790,120</td><td class="val">$1,382,247</td><td class="val ok">+75%</td></tr>
+          <tr><td>7</td><td><strong>Portisur</strong> <span style="font-size:10px;color:var(--text-sec);">7 sucursales</span></td><td class="val">52</td><td class="val">$18,039</td><td class="val">$380,665</td><td class="val">$938,006</td><td class="val ok">+146%</td></tr>
+          <tr><td>8</td><td><strong>Alberta</strong></td><td class="val">27</td><td class="val">$33,542</td><td class="val">&mdash;</td><td class="val">$905,646</td><td><span class="badge green">Nuevo 2026</span></td></tr>
+          <tr><td>9</td><td><strong>5 Oc&#233;anos</strong></td><td class="val">24</td><td class="val">$28,068</td><td class="val">$201,460</td><td class="val">$673,634</td><td class="val ok">+234%</td></tr>
+          <tr><td>10</td><td><strong>La Casa de los Congelados</strong></td><td class="val">20</td><td class="val">$25,511</td><td class="val">$239,548</td><td class="val">$510,225</td><td class="val ok">+113%</td></tr>
+          <tr><td>11</td><td><strong>Dalbertt</strong></td><td class="val">43</td><td class="val">$8,606</td><td class="val">&mdash;</td><td class="val">$370,055</td><td><span class="badge gold">Alta H2 2025</span></td></tr>
+          <tr><td>12</td><td><strong>Supersol</strong></td><td class="val">9</td><td class="val">$39,515</td><td class="val">$297,028</td><td class="val">$355,633</td><td class="val ok">+20%</td></tr>
+          <tr><td>13</td><td><strong>Minimarket La Isla</strong></td><td class="val">29</td><td class="val">$12,086</td><td class="val">&mdash;</td><td class="val">$350,485</td><td><span class="badge gold">Alta H2 2025</span></td></tr>
+          <tr><td>14</td><td><strong>Dist. Leonardo Rijo &ndash; Lavalleja</strong></td><td class="val">3</td><td class="val">$92,913</td><td class="val">&mdash;</td><td class="val">$278,738</td><td><span class="badge gold">Alta H2 2025</span></td></tr>
+          <tr><td>15</td><td><strong>Supermercado El Dep&#243;sito</strong></td><td class="val">9</td><td class="val">$30,866</td><td class="val">&mdash;</td><td class="val">$277,792</td><td><span class="badge gold">Alta H2 2025</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note gold"><strong style="color:#8D6E1F;">Agrupando cada cadena como un solo cliente, La Molienda pasa a ser el n&#250;mero uno de Convita</strong> con $1.84M en 2026, por encima de cualquier socio de marca blanca. Y es un cliente de perfil opuesto: 215 facturas de $8,546 promedio contra las 9 facturas de $159K de Crufi. El top 10 agrupado concentra el 70% de la facturaci&#243;n del a&#241;o.<br><br><strong style="color:var(--red);">El dato para mirar de cerca:</strong> La Spezia (&minus;19%) y Crufi (&minus;22%) facturaron menos que en el mismo per&#237;odo de 2025. El crecimiento del a&#241;o no vino de ellos, sino de los socios nuevos &mdash; 5 Estrellas y Alberta suman $2.55M &mdash; y de las cadenas, que crecieron entre 75% y 146%.</div>
+  </div>
+
+  <!-- Casa & Dispensa -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Casa &amp; Dispensa</div><span class="card-tag">Evoluci&#243;n de la cuenta</span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+      <div class="mini"><div class="mini-l">Facturado 2025</div><div class="mini-v" style="color:var(--text-sec);">$1.22M</div><div class="mini-s">45 facturas (arranc&#243; en el a&#241;o)</div></div>
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Facturado 2026 YTD</div><div class="mini-v" style="color:var(--green-dark);">$1.42M</div><div class="mini-s">62 facturas en 7 meses</div></div>
+      <div class="mini"><div class="mini-l">Hist&#243;rico total</div><div class="mini-v" style="color:var(--green);">$2.64M</div><div class="mini-s">107 facturas</div></div>
+      <div class="mini"><div class="mini-l">Peso en 2026</div><div class="mini-v" style="color:var(--amber);">8.1%</div><div class="mini-s">de la facturaci&#243;n del a&#241;o</div></div>
+    </div>
+    <div class="note green"><strong style="color:var(--green-dark);">Casa &amp; Dispensa es hoy el cuarto cliente de la empresa.</strong> Arranc&#243; en 2025 y en siete meses de 2026 ya super&#243; todo lo facturado el a&#241;o anterior. Con 62 facturas y ticket de $22.9K tiene un perfil de reposici&#243;n frecuente, distinto al de los socios de marca blanca. Por su din&#225;mica de pago particular se la mantiene fuera de los indicadores del reporte de cobranzas, pero en ventas cuenta como cualquier otro cliente.</div>
+  </div>
+
+  <!-- Redes -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Cadenas de Sucursales &ndash; Facturaci&#243;n 2026</div><span class="card-tag">Agrupadas por grupo econ&#243;mico</span></div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px;">
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">La Molienda</div><div class="mini-v" style="color:var(--green-dark);">$1,837,420</div><div class="mini-s">215 fact. &middot; 7 sucursales &middot; <strong style="color:var(--ok);">+88%</strong></div></div>
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Macromercado</div><div class="mini-v" style="color:var(--green-dark);">$1,382,247</div><div class="mini-s">121 fact. &middot; 4 sucursales &middot; <strong style="color:var(--ok);">+75%</strong></div></div>
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Portisur</div><div class="mini-v" style="color:var(--green-dark);">$938,006</div><div class="mini-s">52 fact. &middot; 7 sucursales &middot; <strong style="color:var(--ok);">+146%</strong></div></div>
+      <div class="mini" style="background:#FFF8E1;border:2px solid var(--gold);"><div class="mini-l">Total 3 cadenas</div><div class="mini-v" style="color:#8D6E1F;">$4,157,673</div><div class="mini-s">24% de la facturaci&#243;n 2026</div></div>
+    </div>
+
+    <div class="net-section">
+      <div class="net-header"><div class="net-title">La Molienda</div><div class="net-total">2026: <strong>$1,837,420</strong> &middot; Ene&ndash;Jul 2025: $977,613 &middot; +88%</div></div>
+      <div class="net-grid">
+        <div class="net-card"><div class="net-name">Arocena</div><div class="ns"><span>2026</span><strong>$529,796</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$122,923</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+331%</strong></div></div>
+        <div class="net-card"><div class="net-name">Punta Carretas</div><div class="ns"><span>2026</span><strong>$357,075</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$157,417</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+127%</strong></div></div>
+        <div class="net-card"><div class="net-name">Costa Urbana</div><div class="ns"><span>2026</span><strong>$284,839</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$207,725</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+37%</strong></div></div>
+        <div class="net-card"><div class="net-name">ACJ</div><div class="ns"><span>2026</span><strong>$265,892</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$196,843</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+35%</strong></div></div>
+        <div class="net-card"><div class="net-name">Ciudad Vieja</div><div class="ns"><span>2026</span><strong>$150,612</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$110,501</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+36%</strong></div></div>
+        <div class="net-card"><div class="net-name">Convenci&#243;n</div><div class="ns"><span>2026</span><strong>$127,765</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$101,459</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+26%</strong></div></div>
+        <div class="net-card"><div class="net-name">Ejido</div><div class="ns"><span>2026</span><strong>$121,441</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$80,745</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+50%</strong></div></div>
+        <div class="net-card" style="opacity:.55;"><div class="net-name">Pablo de Mar&#237;a</div><div class="ns"><span>2026</span><strong>$0</strong></div><div class="ns"><span>Estado</span><strong>Inactiva</strong></div></div>
+      </div>
+    </div>
+
+    <div class="net-section">
+      <div class="net-header"><div class="net-title">Macromercado</div><div class="net-total">2026: <strong>$1,382,247</strong> &middot; Ene&ndash;Jul 2025: $790,120 &middot; +75%</div></div>
+      <div class="net-grid">
+        <div class="net-card"><div class="net-name">Carrasco</div><div class="ns"><span>2026</span><strong>$426,284</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$260,705</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+64%</strong></div></div>
+        <div class="net-card"><div class="net-name">San Mart&#237;n</div><div class="ns"><span>2026</span><strong>$377,424</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$324,202</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+16%</strong></div></div>
+        <div class="net-card"><div class="net-name">Maldonado</div><div class="ns"><span>2026</span><strong>$330,720</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$205,213</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+61%</strong></div></div>
+        <div class="net-card" style="border-color:var(--gold);"><div class="net-name">Las Piedras</div><div class="ns"><span>2026</span><strong>$247,819</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$0</strong></div><div class="ns"><span>Var.</span><strong style="color:#8D6E1F;">Nueva</strong></div></div>
+      </div>
+    </div>
+
+    <div class="net-section">
+      <div class="net-header"><div class="net-title">Portisur</div><div class="net-total">2026: <strong>$938,006</strong> &middot; Ene&ndash;Jul 2025: $380,665 &middot; +146%</div></div>
+      <div class="net-grid">
+        <div class="net-card"><div class="net-name">Av. Italia</div><div class="ns"><span>2026</span><strong>$352,187</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$293,328</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+20%</strong></div></div>
+        <div class="net-card" style="border-color:var(--gold);"><div class="net-name">Av. Brasil</div><div class="ns"><span>2026</span><strong>$261,099</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$0</strong></div><div class="ns"><span>Var.</span><strong style="color:#8D6E1F;">Nueva</strong></div></div>
+        <div class="net-card"><div class="net-name">Orinoco</div><div class="ns"><span>2026</span><strong>$126,201</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$18,322</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+589%</strong></div></div>
+        <div class="net-card"><div class="net-name">Rivera</div><div class="ns"><span>2026</span><strong>$96,744</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$18,322</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+428%</strong></div></div>
+        <div class="net-card"><div class="net-name">Gonzalo Ram&#237;rez</div><div class="ns"><span>2026</span><strong>$74,663</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$23,317</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+220%</strong></div></div>
+        <div class="net-card"><div class="net-name">San Jos&#233;</div><div class="ns"><span>2026</span><strong>$19,754</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$16,127</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+22%</strong></div></div>
+        <div class="net-card"><div class="net-name">Chucarro</div><div class="ns"><span>2026</span><strong>$7,358</strong></div><div class="ns"><span>2025 e&ndash;j</span><strong>$4,774</strong></div><div class="ns"><span>Var.</span><strong style="color:var(--ok);">+54%</strong></div></div>
+        <div class="net-card" style="opacity:.55;"><div class="net-name">P&#233;rez Castellano</div><div class="ns"><span>2026</span><strong>$0</strong></div><div class="ns"><span>Estado</span><strong>Inactiva</strong></div></div>
+      </div>
+    </div>
+
+    <div class="note green"><strong style="color:var(--green-dark);">Las tres cadenas facturaron $4.16M en 2026 contra $2.15M en el mismo per&#237;odo de 2025: casi el doble.</strong> Portisur es la de mayor crecimiento (+146%) y la que m&#225;s espacio tiene por delante: sum&#243; Av. Brasil, multiplic&#243; Orinoco y Rivera, y todav&#237;a tiene bocas facturando montos marginales. La Molienda crece parejo en las siete sucursales, con Arocena disparada (+331%). En Macromercado, Las Piedras se incorpor&#243; este a&#241;o y ya factura $248K.<br><br>Como cada cadena es un solo grupo econ&#243;mico, conviene negociar con la casa central en lugar de sucursal por sucursal: sirve tanto para precios y reposici&#243;n como para destrabar cobranzas, que hoy se gestionan boca por boca.</div>
+  </div>
+
+  <!-- Rivero -->
+  <div class="card full" style="border:2px solid var(--green);">
+    <div class="card-header"><div class="card-title">Marcelo Rivero &ndash; Ventas y Cobranzas de su Cartera</div><span class="card-tag">&#218;nico vendedor contratado</span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;">
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Ventas H1 2026</div><div class="mini-v" style="color:var(--green-dark);">$6.32M</div><div class="mini-s">42% de las ventas del semestre</div></div>
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">Pedidos H1</div><div class="mini-v" style="color:var(--green-dark);">590</div><div class="mini-s">Ticket promedio $10,781</div></div>
+      <div class="mini" style="background:var(--red-lt);border-color:#FFCDD2;"><div class="mini-l">CxC de su cartera</div><div class="mini-v" style="color:var(--red);">$3.20M</div><div class="mini-s">50% de la CxC operativa</div></div>
+      <div class="mini" style="background:var(--red-lt);border-color:#FFCDD2;"><div class="mini-l">Vencido en su cartera</div><div class="mini-v" style="color:var(--red);">65.9%</div><div class="mini-s">$2.11M &middot; era 52.5% en mayo</div></div>
+    </div>
+    <div style="margin-bottom:14px;font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--green-dark);">Estado de cobranza de sus principales cuentas (al 27 jul)</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Riesgo</th><th>Cliente</th><th>CxC Abierto</th><th>Vencido</th><th>% Venc.</th><th>M&#225;x. Mora</th></tr></thead>
+        <tbody>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>5 Oc&#233;anos &ndash; Berro</strong></td><td class="val">$359,384</td><td class="val red">$243,375</td><td class="val red">68%</td><td>67 d</td></tr>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>Supersol</strong></td><td class="val">$314,877</td><td class="val red">$222,564</td><td class="val red">71%</td><td>127 d</td></tr>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>La Casa de los Congelados</strong></td><td class="val">$309,459</td><td class="val red">$241,548</td><td class="val red">78%</td><td>94 d</td></tr>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>La Molienda Arocena</strong></td><td class="val">$239,729</td><td class="val red">$179,093</td><td class="val red">75%</td><td>50 d</td></tr>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>La Molienda Punta Carretas</strong></td><td class="val">$197,767</td><td class="val red">$147,061</td><td class="val red">74%</td><td>53 d</td></tr>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>Macromercado Carrasco</strong></td><td class="val">$179,038</td><td class="val red">$119,004</td><td class="val red">66%</td><td>242 d</td></tr>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>Hola Congelados Roosevelt</strong></td><td class="val">$158,176</td><td class="val red">$138,985</td><td class="val red">88%</td><td>109 d</td></tr>
+          <tr><td><span class="dot med"></span>Medio</td><td><strong>Portisur Av. Italia</strong></td><td class="val">$156,225</td><td class="val amber">$85,425</td><td class="val">55%</td><td>72 d</td></tr>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>Macromercado San Mart&#237;n</strong></td><td class="val">$148,735</td><td class="val red">$89,733</td><td class="val red">60%</td><td>536 d</td></tr>
+          <tr><td><span class="dot high"></span>Alto</td><td><strong>La Molienda ACJ</strong></td><td class="val">$132,486</td><td class="val red">$98,994</td><td class="val red">75%</td><td>500 d</td></tr>
+          <tr><td><span class="dot med"></span>Medio</td><td><strong>Minimarket La Isla</strong></td><td class="val">$109,043</td><td class="val">$47,826</td><td class="val">44%</td><td>25 d</td></tr>
+          <tr><td><span class="dot high"></span>Cr&#237;tico</td><td><strong>Sluckis</strong></td><td class="val">$86,733</td><td class="val red">$86,733</td><td class="val red">100%</td><td>184 d</td></tr>
+          <tr><td><span class="dot ok"></span>Al d&#237;a</td><td><strong>Dalbertt</strong></td><td class="val">$63,514</td><td class="val ok">$0</td><td class="val ok">0%</td><td>Al d&#237;a</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note red"><strong style="color:var(--red);">La cartera de Rivero se deterior&#243; fuerte: de 52.5% vencido en mayo a 65.9% en julio.</strong> Vende bien &mdash; m&#225;s del 40% de la facturaci&#243;n de la empresa &mdash; pero cobra mal, y el problema no es de uno o dos clientes: de sus 13 cuentas principales, 10 est&#225;n en rojo. Dalbertt, con 43 facturas y saldo al d&#237;a, demuestra que se puede tener alta frecuencia y cero mora. La lectura no es que Rivero haga mal su trabajo, sino que est&#225; haciendo dos trabajos y solo tiene tiempo para uno: cobrar deber&#237;a salir de su &#243;rbita y pasar a administraci&#243;n.</div>
+  </div>
+
+  <!-- Clientes -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">Clientes &#218;nicos por A&#241;o</div><span class="card-tag">Evoluci&#243;n</span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div class="mini"><div class="mini-l">2023</div><div class="mini-v" style="color:var(--text-sec);">317</div></div>
+      <div class="mini"><div class="mini-l">2024</div><div class="mini-v" style="color:var(--amber);">356</div></div>
+      <div class="mini"><div class="mini-l">2025</div><div class="mini-v" style="color:var(--green);">325</div></div>
+      <div class="mini" style="background:var(--green-muted);border-color:#C8E6C9;"><div class="mini-l">2026 YTD</div><div class="mini-v" style="color:var(--green-dark);">187</div></div>
+    </div>
+    <div class="note green"><strong style="color:var(--green-dark);">187 clientes en 2026: 116 retenidos de 2025 y 63 nuevos.</strong> La base baj&#243; en cantidad desde 2024 pero cada cliente factura mucho m&#225;s: el negocio se concentr&#243; en cuentas comerciales grandes y dej&#243; atr&#225;s el volumen de consumidores individuales.</div>
+  </div>
+
+  <!-- Frecuencia -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">Frecuencia de Compra 2026</div><span class="card-tag">187 clientes activos</span></div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+      <div class="mini" style="text-align:left;"><div style="font-weight:700;font-size:22px;color:var(--green-dark);">75</div><div style="font-size:12px;color:var(--text-sec);">1 compra (40%)</div></div>
+      <div class="mini" style="text-align:left;"><div style="font-weight:700;font-size:22px;color:var(--amber);">61</div><div style="font-size:12px;color:var(--text-sec);">2&ndash;5 compras (33%)</div></div>
+      <div class="mini" style="text-align:left;"><div style="font-weight:700;font-size:22px;color:var(--green);">21</div><div style="font-size:12px;color:var(--text-sec);">6&ndash;12 compras (11%)</div></div>
+      <div class="mini" style="text-align:left;background:var(--green-muted);border-color:#C8E6C9;"><div style="font-weight:700;font-size:22px;color:var(--green-dark);">30</div><div style="font-size:12px;color:var(--text-sec);">13+ compras (16%) &#8592; core</div></div>
+    </div>
+    <div class="note gold"><strong style="color:#8D6E1F;">El n&#250;cleo recurrente son 30 clientes</strong> &mdash; el 16% de la base &mdash; y explican la mayor parte del volumen. El desaf&#237;o sigue estando en el otro extremo: 75 clientes compraron una sola vez en todo el a&#241;o.</div>
+  </div>
+
+  <!-- Conclusion -->
+  <div class="card full" style="border:2px solid var(--green);background:linear-gradient(135deg,#F1F8F3,#FFF);">
+    <div class="card-header"><div class="card-title" style="font-size:22px;">Conclusi&#243;n</div></div>
+    <div style="font-size:14px;line-height:1.7;color:var(--text-sec);">
+      <p>A siete meses de 2026 Convita lleva <strong style="color:var(--green-dark);">$17.52M facturados</strong>, un +91% contra el mismo per&#237;odo de 2025 y el 89% de todo el a&#241;o pasado. La proyecci&#243;n de $30.6M es realista: los &#250;ltimos cuatro meses estuvieron todos arriba de $2.4M y no aparece la ca&#237;da estacional de invierno que s&#237; se vio en 2025.</p>
+      <p style="margin-top:12px;">El motor del crecimiento sigue siendo la marca blanca. <strong style="color:var(--green-dark);">Los cuatro socios &mdash; 5 Estrellas, La Spezia, Crufi y Alberta &mdash; suman $5.46M</strong>, el 31% de lo facturado en 2026. Alberta pas&#243; de no existir a ser el quinto cliente de la empresa en siete meses, y Casa &amp; Dispensa se meti&#243; cuarta con $1.42M. Es la mejor y la peor noticia del reporte: crece r&#225;pido, pero concentra el riesgo en muy pocas manos.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--red);">La contracara es la caja.</strong> La cartera de Rivero, que representa la mitad de las cuentas por cobrar operativas, pas&#243; de 52.5% a 65.9% de mora en dos meses. Cada mes r&#233;cord de ventas est&#225; agrandando un problema de cobranza que ya no se resuelve con buena voluntad. Sacar la cobranza de la &#243;rbita del vendedor y condicionar el despacho al estado de cuenta son las dos decisiones que convertir&#237;an este crecimiento en efectivo.</p>
+      <p style="margin-top:14px;font-size:12px;font-style:italic;color:var(--text-sec);">Nota metodol&#243;gica: este reporte toma como fuente las facturas emitidas (Odoo, account.move) en lugar de los pedidos de venta usados en cortes anteriores, por eso algunos totales difieren de la versi&#243;n de junio. Casa &amp; Dispensa se incluye en todos los indicadores de ventas; en el reporte de cobranzas se sigue reportando por separado.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer"><strong>Convita</strong> &ndash; Integro SAS &middot; General Pagola 1765, Montevideo, Uruguay &middot; <a href="https://www.convita.com.uy">convita.com.uy</a> &middot; Dashboard de Ventas &ndash; Julio 2026</div>
+
+</body>
+</html>

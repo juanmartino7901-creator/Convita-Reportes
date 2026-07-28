@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convita &ndash; An&#225;lisis de Productos &middot; Julio 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g:#1B5E3B;--gl:#2E7D52;--gd:#0D3D24;--gm:#E8F5E9;--o:#E27530;--ol:#F09050;--od:#B85A1E;--om:#FFF3EB;--cream:#FAFAF5;--text:#1A1A1A;--ts:#5A6B5E;--border:#D4E0D8;--card:#FFF;--gold:#C8A951;--purple:#5C6BC0;--plm:#E8EAF6;--red:#D32F2F;--amber:#E6A200;--sh-sm:0 1px 3px rgba(27,94,59,.06);--sh-md:0 4px 16px rgba(27,94,59,.08);--sh-lg:0 8px 32px rgba(27,94,59,.12);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden}
+.hero{background:linear-gradient(135deg,#8D6E1F 0%,var(--gold) 45%,#D4B85E 100%);padding:46px 56px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.16) 0%,transparent 70%);border-radius:50%}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.3)}
+.brand-text h1{font-family:'Playfair Display',serif;font-size:27px;font-weight:600;color:#fff;letter-spacing:-.5px}
+.brand-text span{font-size:13px;color:rgba(255,255,255,.9);font-weight:300}
+.hero-date{color:#fff;font-size:13px;background:rgba(255,255,255,.18);padding:8px 16px;border-radius:100px;border:1px solid rgba(255,255,255,.25)}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);margin:-28px 40px 0;position:relative;z-index:2;background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);overflow:hidden}
+.kpi{padding:26px 28px;border-right:1px solid var(--border)}.kpi:last-child{border-right:none}
+.kpi-label{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ts);font-weight:500;margin-bottom:8px}
+.kpi-value{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--g);line-height:1.1}
+.kpi-sub{font-size:12px;color:var(--ts);margin-top:5px}
+.badge{display:inline-flex;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin-top:5px}
+.badge.green{background:var(--gm);color:var(--g)}.badge.gold{background:#FFF8E1;color:#8D6E1F}.badge.orange{background:var(--om);color:var(--od)}.badge.purple{background:var(--plm);color:var(--purple)}
+.main{padding:36px 40px 56px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-sm);padding:28px 32px;border:1px solid var(--border);transition:box-shadow .3s}
+.card:hover{box-shadow:var(--sh-md)}.card.full{grid-column:1/-1}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+.card-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--gd)}
+.card-tag{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ts);background:var(--gm);padding:4px 12px;border-radius:100px;font-weight:500}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:10px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--ts);font-weight:600;border-bottom:2px solid var(--g)}
+thead th:nth-child(n+3),tbody td:nth-child(n+3){text-align:right}
+tbody tr{border-bottom:1px solid #F0F4F1}tbody tr:hover{background:#F8FAF8}
+tbody td{padding:10px 12px}
+.rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;font-size:10px;font-weight:700;background:var(--gm);color:var(--g)}
+.rank.top{background:var(--g);color:#fff}
+.val{font-weight:600;font-variant-numeric:tabular-nums;color:var(--gd)}
+.tag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:4px}
+.tag.crufi{background:#E3F2FD;color:#1565C0}
+.tag.spezia{background:#FFF3E0;color:#E65100}
+.tag.estrellas{background:#F3E5F5;color:#7B1FA2}
+.tag.alberta{background:#E8F5E9;color:#2E7D52}
+.tag.d2c{background:#FFF8E1;color:#8D6E1F}
+.donut-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;text-align:center}
+.donut-card{padding:24px 16px;border-radius:14px;border:1px solid var(--border);background:linear-gradient(135deg,#F8FAF8,#FFF)}
+.donut-pct{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;line-height:1}
+.donut-label{font-size:13px;font-weight:700;color:var(--gd);margin-top:6px}
+.donut-sub{font-size:11px;color:var(--ts);margin-top:4px}
+.note{padding:13px 16px;border-radius:10px;font-size:12.5px;color:var(--ts);line-height:1.55;margin-top:16px}
+.note.green{background:#F1F8F3;border:1px solid #C8E6C9}
+.note.gold{background:#FFF8E1;border:1px solid #F5E0BC}
+.note.orange{background:var(--om);border:1px solid #FFCCBC}
+.cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.cat-card{padding:14px;border-radius:10px;background:linear-gradient(135deg,#F8FAF8,#FFF);border:1px solid var(--border);text-align:center}
+.cat-icon{font-size:26px;margin-bottom:6px}
+.cat-name{font-weight:700;font-size:12px;color:var(--gd);margin-bottom:4px}
+.cat-val{font-size:11px;color:var(--ts)}.cat-val strong{color:var(--text)}
+.footer{text-align:center;padding:24px 40px 36px;font-size:12px;color:var(--ts);border-top:1px solid var(--border);margin:0 40px}
+.footer a{color:var(--g);text-decoration:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.kpi-strip,.card{animation:fadeUp .55s ease both}
+.card:nth-child(1){animation-delay:.06s}.card:nth-child(2){animation-delay:.12s}.card:nth-child(3){animation-delay:.18s}
+.card:nth-child(4){animation-delay:.24s}.card:nth-child(5){animation-delay:.3s}.card:nth-child(6){animation-delay:.36s}
+.card:nth-child(7){animation-delay:.42s}.card:nth-child(8){animation-delay:.48s}
+@media(max-width:1100px){.main{grid-template-columns:1fr}.card.full{grid-column:1}.kpi-strip{grid-template-columns:repeat(2,1fr);margin:-28px 20px 0}.kpi:nth-child(2){border-right:none}.hero{padding:34px 22px 32px}.main{padding:28px 20px 44px}.cat-grid{grid-template-columns:repeat(2,1fr)}.donut-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.kpi-strip{grid-template-columns:1fr}.kpi{border-right:none;border-bottom:1px solid var(--border)}.cat-grid,.donut-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="brand">
+      <div class="brand-logo">C</div>
+      <div class="brand-text">
+        <h1>Convita &ndash; An&#225;lisis de Productos</h1>
+        <span>Mix por canal, categor&#237;as y marca blanca</span>
+      </div>
+    </div>
+    <div class="hero-date">Hist&#243;rico &middot; Corte: 27 Jul 2026</div>
+  </div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-label">Base Imponible Total</div><div class="kpi-value">$38.7M</div><div class="kpi-sub">86 productos &middot; 23,668 l&#237;neas</div></div>
+  <div class="kpi"><div class="kpi-label">Convita B2B</div><div class="kpi-value" style="color:var(--gd);">$20.1M</div><div class="badge green">51.9% &middot; 57 SKUs</div></div>
+  <div class="kpi"><div class="kpi-label">Marca Blanca</div><div class="kpi-value" style="color:var(--o);">$13.1M</div><div class="badge orange">33.9% &middot; 4 socios</div></div>
+  <div class="kpi"><div class="kpi-label">Convita D2C</div><div class="kpi-value" style="color:var(--gold);">$5.5M</div><div class="badge gold">14.2% &middot; sin movimiento</div></div>
+</div>
+
+<div class="main">
+
+  <!-- Canales -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Composici&#243;n por Canal de Venta</div><span class="card-tag">Tres canales</span></div>
+    <div class="donut-grid">
+      <div class="donut-card" style="border-color:var(--g);border-width:2px;">
+        <div class="donut-pct" style="color:var(--gd);">51.9%</div>
+        <div class="donut-label">Convita B2B</div>
+        <div class="donut-sub">$20.06M &middot; 57 SKUs &middot; 19,322 l&#237;neas</div>
+        <div class="donut-sub" style="margin-top:8px;font-style:italic;">L&#237;nea registrada con c&#243;digo [xxx] para puntos de venta, m&#225;s el cat&#225;logo extendido. Es el canal que crece.</div>
+      </div>
+      <div class="donut-card" style="border-color:var(--o);border-width:2px;">
+        <div class="donut-pct" style="color:var(--od);">33.9%</div>
+        <div class="donut-label">Marca Blanca</div>
+        <div class="donut-sub">$13.12M &middot; 15 SKUs &middot; 438 l&#237;neas</div>
+        <div class="donut-sub" style="margin-top:8px;font-style:italic;">Producci&#243;n para terceros con marca del cliente: La Spezia, Crufi, 5 Estrellas y Alberta.</div>
+      </div>
+      <div class="donut-card" style="border-color:var(--gold);border-width:2px;">
+        <div class="donut-pct" style="color:var(--gold);">14.2%</div>
+        <div class="donut-label">Convita D2C</div>
+        <div class="donut-sub">$5.47M &middot; 14 SKUs &middot; 3,908 l&#237;neas</div>
+        <div class="donut-sub" style="margin-top:8px;font-style:italic;">Venta directa al consumidor final, el canal original. Acumulado hist&#243;rico sin movimiento nuevo.</div>
+      </div>
+    </div>
+    <div class="note green"><strong style="color:var(--gd);">Convita como marca propia (B2B + D2C) representa el 66.1% del total ($25.5M).</strong> El detalle importante de este corte: <strong>las referencias D2C no registraron ventas nuevas desde el &#250;ltimo cierre</strong> &mdash; su acumulado qued&#243; id&#233;ntico en $5,472,707. En la pr&#225;ctica, el canal directo dej&#243; de operar bajo esas referencias y todo el movimiento pas&#243; a la l&#237;nea B2B con c&#243;digo. Conviene decidir si esas 14 referencias se archivan en Odoo o se reactivan formalmente.</div>
+  </div>
+
+  <!-- Categorias -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Ventas por Categor&#237;a</div><span class="card-tag">Todos los canales</span></div>
+    <div class="cat-grid">
+      <div class="cat-card" style="border-color:var(--g);"><div class="cat-icon">&#127837;</div><div class="cat-name">Pastas</div><div class="cat-val"><strong>$11.63M</strong> &middot; 30.1%</div><div class="cat-val">2,295 l&#237;neas</div></div>
+      <div class="cat-card"><div class="cat-icon">&#127829;</div><div class="cat-name">Pizzas</div><div class="cat-val"><strong>$7.14M</strong> &middot; 18.5%</div><div class="cat-val">2,459 l&#237;neas</div></div>
+      <div class="cat-card"><div class="cat-icon">&#129386;</div><div class="cat-name">Empanadas</div><div class="cat-val"><strong>$5.99M</strong> &middot; 15.5%</div><div class="cat-val">5,035 l&#237;neas</div></div>
+      <div class="cat-card"><div class="cat-icon">&#127838;</div><div class="cat-name">Panificados</div><div class="cat-val"><strong>$3.63M</strong> &middot; 9.4%</div><div class="cat-val">3,755 l&#237;neas</div></div>
+      <div class="cat-card"><div class="cat-icon">&#127830;</div><div class="cat-name">Milanesas</div><div class="cat-val"><strong>$3.42M</strong> &middot; 8.8%</div><div class="cat-val">2,577 l&#237;neas</div></div>
+    </div>
+    <div style="height:12px;"></div>
+    <div class="cat-grid">
+      <div class="cat-card"><div class="cat-icon">&#129473;</div><div class="cat-name">Tartas</div><div class="cat-val"><strong>$2.84M</strong> &middot; 7.3%</div><div class="cat-val">2,823 l&#237;neas</div></div>
+      <div class="cat-card"><div class="cat-icon">&#129372;</div><div class="cat-name">Croquetas</div><div class="cat-val"><strong>$2.48M</strong> &middot; 6.4%</div><div class="cat-val">2,125 l&#237;neas</div></div>
+      <div class="cat-card"><div class="cat-icon">&#127852;</div><div class="cat-name">Postres/Dulces</div><div class="cat-val"><strong>$924K</strong> &middot; 2.4%</div><div class="cat-val">1,310 l&#237;neas</div></div>
+      <div class="cat-card"><div class="cat-icon">&#129360;</div><div class="cat-name">Panader&#237;a</div><div class="cat-val"><strong>$486K</strong> &middot; 1.3%</div><div class="cat-val">959 l&#237;neas</div></div>
+      <div class="cat-card"><div class="cat-icon">&#127871;</div><div class="cat-name">Snacks</div><div class="cat-val"><strong>$116K</strong> &middot; 0.3%</div><div class="cat-val">330 l&#237;neas</div></div>
+    </div>
+    <div class="note green"><strong style="color:var(--gd);">Pastas, Pizzas y Empanadas concentran el 64% de la facturaci&#243;n.</strong> Pastas lidera por el peso de los ravioles de marca blanca, pero Empanadas es la categor&#237;a con m&#225;s movimiento real (5,035 l&#237;neas): es lo que m&#225;s veces se vende, aunque con ticket menor. Tartas escal&#243; al 6&#186; puesto con $2.84M y es hoy la categor&#237;a con m&#225;s variedades del cat&#225;logo.</div>
+  </div>
+
+  <!-- Top 15 -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">Top 15 Productos por Facturaci&#243;n</div><span class="card-tag">Hist&#243;rico acumulado</span></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>#</th><th>Producto</th><th>Canal</th><th>L&#237;neas</th><th>Base Imponible</th><th>% Total</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank top">1</span></td><td><strong>Pizza Muzzarella Crufi</strong> <span class="tag crufi">Crufi</span></td><td>M. Blanca</td><td class="val">38</td><td class="val">$4,051,450</td><td>10.5%</td></tr>
+          <tr><td><span class="rank top">2</span></td><td><strong>Ravioles J&amp;Q La Spezia</strong> <span class="tag spezia">Spezia</span></td><td>M. Blanca</td><td class="val">99</td><td class="val">$2,994,210</td><td>7.7%</td></tr>
+          <tr><td><span class="rank top">3</span></td><td><strong>Ravioles Verdura La Spezia</strong> <span class="tag spezia">Spezia</span></td><td>M. Blanca</td><td class="val">100</td><td class="val">$2,970,384</td><td>7.7%</td></tr>
+          <tr><td><span class="rank">4</span></td><td><strong>[501] Pizza Muzzarella</strong></td><td>B2B</td><td class="val">1,507</td><td class="val">$1,910,231</td><td>4.9%</td></tr>
+          <tr><td><span class="rank">5</span></td><td><strong>[201] Empanadas de Carne x 3</strong></td><td>B2B</td><td class="val">1,445</td><td class="val">$1,886,861</td><td>4.9%</td></tr>
+          <tr><td><span class="rank">6</span></td><td><strong>[301] Milanesas de Carne x 4</strong></td><td>B2B</td><td class="val">1,118</td><td class="val">$1,432,252</td><td>3.7%</td></tr>
+          <tr><td><span class="rank">7</span></td><td><strong>[302] Milanesas de Pollo x 4</strong></td><td>B2B</td><td class="val">1,126</td><td class="val">$1,342,332</td><td>3.5%</td></tr>
+          <tr><td><span class="rank">8</span></td><td><strong>[701] Ravioles J&amp;Q 500g</strong></td><td>B2B</td><td class="val">652</td><td class="val">$1,321,836</td><td>3.4%</td></tr>
+          <tr><td><span class="rank">9</span></td><td><strong>[401] Pan de Queso x 6</strong></td><td>B2B</td><td class="val">1,030</td><td class="val">$1,284,242</td><td>3.3%</td></tr>
+          <tr><td><span class="rank">10</span></td><td><strong>[702] Ravioles de Verdura 500g</strong></td><td>B2B</td><td class="val">663</td><td class="val">$1,251,966</td><td>3.2%</td></tr>
+          <tr><td><span class="rank">11</span></td><td><strong>[203] Empanadas J&amp;Q x 3</strong></td><td>B2B</td><td class="val">916</td><td class="val">$1,059,852</td><td>2.7%</td></tr>
+          <tr><td><span class="rank">12</span></td><td><strong>[204] Empanadas Q&amp;C x 3</strong></td><td>B2B</td><td class="val">798</td><td class="val">$940,140</td><td>2.4%</td></tr>
+          <tr><td><span class="rank">13</span></td><td><strong>&#209;oquis La Spezia</strong> <span class="tag spezia">Spezia</span></td><td>M. Blanca</td><td class="val">69</td><td class="val">$938,520</td><td>2.4%</td></tr>
+          <tr><td><span class="rank">14</span></td><td><strong>[101] Croquetas de Bondiola x 12</strong></td><td>B2B</td><td class="val">781</td><td class="val">$895,822</td><td>2.3%</td></tr>
+          <tr><td><span class="rank">15</span></td><td><strong>Pizza Muzzarella</strong> <span class="tag d2c">D2C</span></td><td>D2C</td><td class="val">480</td><td class="val">$832,060</td><td>2.2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note orange"><strong style="color:var(--od);">Los tres primeros puestos son marca blanca y suman el 25.9% del total.</strong> La comparaci&#243;n m&#225;s reveladora est&#225; entre el #1 y el #4: la pizza de Crufi factura el doble que la pizza propia con 38 l&#237;neas contra 1,507. Un pedido de marca blanca vale, en promedio, 84 veces m&#225;s que uno de retail. Es un negocio de pocas &#243;rdenes muy grandes conviviendo con otro de muchas &#243;rdenes chicas.</div>
+  </div>
+
+  <!-- Marca blanca -->
+  <div class="card full" style="border:2px solid var(--o);">
+    <div class="card-header"><div class="card-title">Marca Blanca &ndash; Detalle por Socio</div><span class="card-tag">$13.12M &middot; 33.9% del total</span></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Socio</th><th>Producto</th><th>L&#237;neas</th><th>Base Imponible</th><th>Ticket Prom.</th></tr></thead>
+        <tbody>
+          <tr style="background:#FFF3E0;"><td colspan="2"><strong>La Spezia</strong> &mdash; 3 productos</td><td class="val">268</td><td class="val" style="color:var(--od);">$6,903,114</td><td class="val">$25,758</td></tr>
+          <tr><td></td><td>Ravioles de Jam&#243;n y Queso 500g</td><td class="val">99</td><td class="val">$2,994,210</td><td class="val">$30,244</td></tr>
+          <tr><td></td><td>Ravioles de Verdura 500g</td><td class="val">100</td><td class="val">$2,970,384</td><td class="val">$29,704</td></tr>
+          <tr><td></td><td>&#209;oquis</td><td class="val">69</td><td class="val">$938,520</td><td class="val">$13,602</td></tr>
+          <tr style="background:#E3F2FD;"><td colspan="2"><strong>Crufi</strong> &mdash; 1 producto</td><td class="val">38</td><td class="val" style="color:#1565C0;">$4,051,450</td><td class="val">$106,617</td></tr>
+          <tr><td></td><td>Pizza Muzzarella</td><td class="val">38</td><td class="val">$4,051,450</td><td class="val">$106,617</td></tr>
+          <tr style="background:#F3E5F5;"><td colspan="2"><strong>5 Estrellas</strong> &mdash; 2 productos</td><td class="val">41</td><td class="val" style="color:#7B1FA2;">$1,495,500</td><td class="val">$36,476</td></tr>
+          <tr><td></td><td>Ravioles de Verdura</td><td class="val">22</td><td class="val">$770,700</td><td class="val">$35,032</td></tr>
+          <tr><td></td><td>Ravioles de Jam&#243;n y Queso</td><td class="val">19</td><td class="val">$724,800</td><td class="val">$38,147</td></tr>
+          <tr style="background:var(--gm);"><td colspan="2"><strong>Alberta</strong> &#9650; &mdash; 9 productos</td><td class="val">91</td><td class="val" style="color:var(--gd);">$666,467</td><td class="val">$7,324</td></tr>
+          <tr><td></td><td>Tarta Jam&#243;n y Queso</td><td class="val">13</td><td class="val">$113,064</td><td class="val">$8,697</td></tr>
+          <tr><td></td><td>Tarta Pollo</td><td class="val">13</td><td class="val">$112,224</td><td class="val">$8,633</td></tr>
+          <tr><td></td><td>Tarta Calabaza</td><td class="val">11</td><td class="val">$95,088</td><td class="val">$8,644</td></tr>
+          <tr><td></td><td>Tarta Peras Gruyere</td><td class="val">11</td><td class="val">$89,712</td><td class="val">$8,156</td></tr>
+          <tr><td></td><td>Medialunas x 4</td><td class="val">10</td><td class="val">$74,560</td><td class="val">$7,456</td></tr>
+          <tr><td></td><td>Tarta Espinacas y Queso Azul</td><td class="val">10</td><td class="val">$59,136</td><td class="val">$5,914</td></tr>
+          <tr><td></td><td>Ciabatta x 2</td><td class="val">7</td><td class="val">$42,925</td><td class="val">$6,132</td></tr>
+          <tr><td></td><td>Tarta Caprese</td><td class="val">6</td><td class="val">$41,832</td><td class="val">$6,972</td></tr>
+          <tr><td></td><td>Tortugas x 4</td><td class="val">10</td><td class="val">$37,926</td><td class="val">$3,793</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note gold"><strong style="color:#8D6E1F;">Alberta juega distinto a los otros tres.</strong> Mientras La Spezia, Crufi y 5 Estrellas compran uno o dos productos en vol&#250;menes enormes, Alberta pide nueve referencias distintas con tickets de $6&ndash;9K: es una relaci&#243;n de cat&#225;logo, no de commodity. Ese perfil es m&#225;s trabajoso en producci&#243;n pero mucho m&#225;s dif&#237;cil de reemplazar, y da a Convita un socio que no depende de un solo SKU. Con $666K y creciendo r&#225;pido, vale la pena tratarlo como cuenta estrat&#233;gica.</div>
+  </div>
+
+  <!-- B2B core -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">B2B Core &ndash; L&#237;nea con C&#243;digo</div><span class="card-tag">$18.08M &middot; 24 SKUs</span></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Producto</th><th>L&#237;neas</th><th>Base Imp.</th></tr></thead>
+        <tbody>
+          <tr><td>[501] Pizza Muzzarella</td><td class="val">1,507</td><td class="val">$1,910,231</td></tr>
+          <tr><td>[201] Empanadas Carne x3</td><td class="val">1,445</td><td class="val">$1,886,861</td></tr>
+          <tr><td>[301] Milanesas Carne x4</td><td class="val">1,118</td><td class="val">$1,432,252</td></tr>
+          <tr><td>[302] Milanesas Pollo x4</td><td class="val">1,126</td><td class="val">$1,342,332</td></tr>
+          <tr><td>[701] Ravioles J&amp;Q 500g</td><td class="val">652</td><td class="val">$1,321,836</td></tr>
+          <tr><td>[401] Pan de Queso x6</td><td class="val">1,030</td><td class="val">$1,284,242</td></tr>
+          <tr><td>[702] Ravioles Verdura 500g</td><td class="val">663</td><td class="val">$1,251,966</td></tr>
+          <tr><td>[203] Empanadas J&amp;Q x3</td><td class="val">916</td><td class="val">$1,059,852</td></tr>
+          <tr><td>[204] Empanadas Q&amp;C x3</td><td class="val">798</td><td class="val">$940,140</td></tr>
+          <tr><td>[101] Croquetas Bondiola x12</td><td class="val">781</td><td class="val">$895,822</td></tr>
+          <tr><td>[601] Tarta Pascualina</td><td class="val">769</td><td class="val">$766,031</td></tr>
+          <tr><td>[102] Croquetas P&amp;C x12</td><td class="val">613</td><td class="val">$704,734</td></tr>
+          <tr><td>[402] Pan de Queso 1 kg</td><td class="val">371</td><td class="val">$525,658</td></tr>
+          <tr><td>[202] Empanadas Espinaca x3</td><td class="val">520</td><td class="val">$517,947</td></tr>
+          <tr><td>[403] Pan Blanco 700 g</td><td class="val">679</td><td class="val">$474,238</td></tr>
+          <tr><td>[602] Tarta Shiitake y Calabaza</td><td class="val">492</td><td class="val">$450,596</td></tr>
+          <tr><td>[404] Pan Multicereal 700 g</td><td class="val">547</td><td class="val">$380,581</td></tr>
+          <tr><td>[801] Alfajor Helado DDL</td><td class="val">408</td><td class="val">$292,540</td></tr>
+          <tr><td>[502] Fugazzeta</td><td class="val">199</td><td class="val">$251,686</td></tr>
+          <tr><td>[802] Alfajor Helado Maracuy&#225;</td><td class="val">323</td><td class="val">$240,110</td></tr>
+          <tr><td>[405] Panettone Chocolate</td><td class="val">77</td><td class="val">$69,676</td></tr>
+          <tr><td>[903] Postre ChocoVita &#9650;</td><td class="val">23</td><td class="val">$31,399</td></tr>
+          <tr><td>[902] Postre LemonVita &#9650;</td><td class="val">20</td><td class="val">$25,320</td></tr>
+          <tr><td>[901] Postre BrownVita &#9650;</td><td class="val">17</td><td class="val">$21,398</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note green"><strong style="color:var(--gd);">Novedad: la l&#237;nea de postres [901&ndash;903].</strong> BrownVita, LemonVita y ChocoVita se codificaron y ya facturan $78K combinados en su arranque. Es la primera incorporaci&#243;n formal al cat&#225;logo core desde los alfajores.</div>
+  </div>
+
+  <!-- B2B extendido -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">B2B Extendido &ndash; Sin C&#243;digo</div><span class="card-tag">$1.99M &middot; 33 SKUs</span></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Producto</th><th>L&#237;neas</th><th>Base Imp.</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>Tarta de Jam&#243;n y Queso</td><td class="val">339</td><td class="val">$230,840</td><td><span class="badge green">Codificar</span></td></tr>
+          <tr><td>Tarta Caprese</td><td class="val">375</td><td class="val">$212,997</td><td><span class="badge green">Codificar</span></td></tr>
+          <tr><td>Tarta de Shiitake y Queso</td><td class="val">314</td><td class="val">$197,664</td><td><span class="badge green">Codificar</span></td></tr>
+          <tr><td>Medialunas x 6</td><td class="val">337</td><td class="val">$172,721</td><td><span class="badge green">Codificar</span></td></tr>
+          <tr><td>Salchich&#243;n de Chocolate</td><td class="val">230</td><td class="val">$128,369</td><td><span class="badge green">Codificar</span></td></tr>
+          <tr><td>Bastones de Queso</td><td class="val">330</td><td class="val">$115,970</td><td><span class="badge green">Codificar</span></td></tr>
+          <tr><td>Pan de Nuez</td><td class="val">323</td><td class="val">$104,909</td><td><span class="badge green">Codificar</span></td></tr>
+          <tr><td>Pizza Pomodoro</td><td class="val">235</td><td class="val">$92,136</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Alfajores FMS x 8</td><td class="val">13</td><td class="val">$87,102</td><td><span class="badge purple">Ticket alto</span></td></tr>
+          <tr><td>&#209;oquis de Papa 400 g</td><td class="val">208</td><td class="val">$82,727</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Croquetas de Arroz</td><td class="val">177</td><td class="val">$66,649</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Roll de Canela x 2</td><td class="val">216</td><td class="val">$63,677</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Panzottis Verdura</td><td class="val">165</td><td class="val">$62,176</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Pan Brioche</td><td class="val">197</td><td class="val">$61,981</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Bud&#237;n Carrot</td><td class="val">162</td><td class="val">$55,604</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Scones de Queso</td><td class="val">121</td><td class="val">$42,288</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Ojitos Choco y Man&#237;</td><td class="val">107</td><td class="val">$39,478</td><td><span class="badge gold">Creciendo</span></td></tr>
+          <tr><td>Panzottis de J&amp;Q</td><td class="val">57</td><td class="val">$33,614</td><td><span class="badge purple">Nicho</span></td></tr>
+          <tr><td>Salchich&#243;n sin Az&#250;car</td><td class="val">48</td><td class="val">$20,518</td><td><span class="badge purple">Nicho</span></td></tr>
+          <tr><td>Pan de Queso 60 g</td><td class="val">13</td><td class="val">$19,279</td><td><span class="badge purple">Nicho</span></td></tr>
+          <tr><td>Medialunas de J&amp;Q x 3</td><td class="val">27</td><td class="val">$18,716</td><td><span class="badge purple">Nicho</span></td></tr>
+          <tr><td>Bocados Helado Frutos Rojos</td><td class="val">26</td><td class="val">$13,446</td><td><span class="badge purple">Nicho</span></td></tr>
+          <tr><td>Scones Tradicionales</td><td class="val">48</td><td class="val">$11,627</td><td><span class="badge purple">Nicho</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note gold"><strong style="color:#8D6E1F;">Siete productos ya superan los $100K sin tener c&#243;digo asignado.</strong> Las tres tartas nuevas, medialunas, salchich&#243;n, bastones y pan de nuez suman $1.16M entre todos &mdash; m&#225;s que varios SKUs que s&#237; est&#225;n codificados. Formalizarlos con c&#243;digo y ficha t&#233;cnica ordena el cat&#225;logo y habilita venderlos como l&#237;nea en los puntos de venta.</div>
+  </div>
+
+  <!-- B2B vs D2C -->
+  <div class="card full">
+    <div class="card-header"><div class="card-title">B2B vs D2C &ndash; El Mismo Producto en Dos Canales</div><span class="card-tag">Marca propia</span></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Producto</th><th>B2B (l&#237;neas)</th><th>B2B ($)</th><th>D2C (l&#237;neas)</th><th>D2C ($)</th><th>Ratio B2B/D2C</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Pizza Muzzarella</strong></td><td class="val">1,507</td><td class="val">$1,910,231</td><td class="val">480</td><td class="val">$832,060</td><td class="val">2.3x</td></tr>
+          <tr><td><strong>Empanadas de Carne</strong></td><td class="val">1,445</td><td class="val">$1,886,861</td><td class="val">459</td><td class="val">$737,526</td><td class="val">2.6x</td></tr>
+          <tr><td><strong>Milanesas de Carne</strong></td><td class="val">1,118</td><td class="val">$1,432,252</td><td class="val">166</td><td class="val">$336,583</td><td class="val">4.3x</td></tr>
+          <tr><td><strong>Milanesas de Pollo</strong></td><td class="val">1,126</td><td class="val">$1,342,332</td><td class="val">167</td><td class="val">$307,824</td><td class="val">4.4x</td></tr>
+          <tr><td><strong>Ravioles de J&amp;Q</strong></td><td class="val">652</td><td class="val">$1,321,836</td><td class="val">115</td><td class="val">$213,129</td><td class="val">6.2x</td></tr>
+          <tr><td><strong>Pan de Queso</strong></td><td class="val">1,030</td><td class="val">$1,284,242</td><td class="val">479</td><td class="val">$654,872</td><td class="val">2.0x</td></tr>
+          <tr><td><strong>Ravioles de Verdura</strong></td><td class="val">663</td><td class="val">$1,251,966</td><td class="val">121</td><td class="val">$259,704</td><td class="val">4.8x</td></tr>
+          <tr><td><strong>Empanadas de J&amp;Q</strong></td><td class="val">916</td><td class="val">$1,059,852</td><td class="val">347</td><td class="val">$364,013</td><td class="val">2.9x</td></tr>
+          <tr><td><strong>Empanadas Q&amp;C</strong></td><td class="val">798</td><td class="val">$940,140</td><td class="val">299</td><td class="val">$261,427</td><td class="val">3.6x</td></tr>
+          <tr><td><strong>Croquetas de Bondiola</strong></td><td class="val">781</td><td class="val">$895,822</td><td class="val">291</td><td class="val">$434,230</td><td class="val">2.1x</td></tr>
+          <tr><td><strong>Tarta Pascualina</strong></td><td class="val">769</td><td class="val">$766,031</td><td class="val">247</td><td class="val">$272,217</td><td class="val">2.8x</td></tr>
+          <tr><td><strong>Croquetas P&amp;C</strong></td><td class="val">613</td><td class="val">$704,734</td><td class="val">263</td><td class="val">$378,750</td><td class="val">1.9x</td></tr>
+          <tr><td><strong>Empanadas de Espinaca</strong></td><td class="val">520</td><td class="val">$517,947</td><td class="val">251</td><td class="val">$221,233</td><td class="val">2.3x</td></tr>
+          <tr><td><strong>Tarta Shiitake y Calabaza</strong></td><td class="val">492</td><td class="val">$450,596</td><td class="val">223</td><td class="val">$199,138</td><td class="val">2.3x</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note green"><strong style="color:var(--gd);">El B2B supera al D2C en los catorce productos, de 1.9x a 6.2x.</strong> Los ravioles son el caso extremo: el canal comercial vende seis veces m&#225;s que el directo. La brecha se ampli&#243; en todos los productos desde el corte anterior, simplemente porque el B2B sigue creciendo mientras el D2C qued&#243; congelado. La transici&#243;n de canal ya est&#225; completa.</div>
+  </div>
+
+  <!-- Conclusion -->
+  <div class="card full" style="border:2px solid var(--gold);background:linear-gradient(135deg,#FFFBF0,#FFF);">
+    <div class="card-header"><div class="card-title" style="font-size:22px;">Conclusi&#243;n</div></div>
+    <div style="font-size:14px;line-height:1.7;color:var(--ts);">
+      <p>Convita mueve <strong style="color:var(--gd);">86 productos por $38.7M de base imponible acumulada</strong>. La estructura se estabiliz&#243; en tres canales bien diferenciados: B2B con marca propia (52%), marca blanca para terceros (34%) y el remanente hist&#243;rico de venta directa (14%), que ya no registra movimiento.</p>
+      <p style="margin-top:12px;">La marca blanca creci&#243; de $11.4M a $13.1M desde el corte anterior, con <strong style="color:var(--gd);">Alberta como la incorporaci&#243;n m&#225;s interesante</strong>: nueve referencias distintas, perfil de cat&#225;logo y no de commodity. Es el &#250;nico socio que compra variedad, y eso lo hace estructuralmente m&#225;s estable que Crufi, que concentra $4.05M en un &#250;nico SKU.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--od);">Dos tareas concretas de cat&#225;logo:</strong> (1) codificar los siete productos del extendido que ya superan $100K &mdash; las tres tartas, medialunas, salchich&#243;n, bastones y pan de nuez &mdash; para que dejen de ser referencias sueltas; y (2) archivar o reactivar formalmente las 14 referencias D2C, que hoy solo agregan ruido al reporte sin aportar ventas.</p>
+      <p style="margin-top:12px;">El riesgo de fondo no cambi&#243;: <strong style="color:var(--red);">La Spezia y Crufi juntos son $10.95M</strong>, el 28% de todo lo producido. Seguir sumando socios como Alberta &mdash; m&#225;s chicos pero m&#225;s diversificados &mdash; es la mejor cobertura frente a esa concentraci&#243;n.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer"><strong>Convita</strong> &ndash; Integro SAS &middot; General Pagola 1765, Montevideo, Uruguay &middot; <a href="https://www.convita.com.uy">convita.com.uy</a> &middot; An&#225;lisis de Productos &ndash; Julio 2026</div>
+
+</body>
+</html>
